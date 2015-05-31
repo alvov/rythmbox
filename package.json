@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "browserify": "10.2.0",
+    "gulp": "3.8.11",
+    "gulp-autoprefixer": "2.1.0",
+    "gulp-stylus": "2.0.1",
+    "resolve": "1.1.6",
+    "react": "0.13.3",
+    "reactify": "1.1.1",
+    "flux": "2.0.3",
+    "object-assign": "2.0.0",
+    "vinyl-source-stream": "1.1.0"
+  },
+  "devDependencies": {
+    "http-server": "0.8.0"
+  },
+  "name": "rythmbox",
+  "version": "1.0.0"
+}
