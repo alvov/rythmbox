@@ -9,7 +9,11 @@ var rythmBox = new RythmBox({
     tempo: 160,
     urls: [
         '/sounds/kick.ogg',
-        '/sounds/snare.ogg'
+        '/sounds/snare.ogg',
+        '/sounds/hat_01.ogg',
+        '/sounds/hat_02.ogg',
+        '/sounds/hat_03.ogg',
+        '/sounds/crash.ogg'        
     ]
 });
 
