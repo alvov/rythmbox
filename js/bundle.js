@@ -335,11 +335,35 @@ var Collection = function() {
             plain: [
                 { bars: [
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                    [1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1],
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 ] },
                 { bars: [
                     [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0]
+                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
+                    [1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                ] },
+                { bars: [
+                    [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
+                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                ] },
+                { bars: [
+                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1],
+                    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
+                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+                    [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
+                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
                 ] }
             ],
             breaks: [
@@ -383,11 +407,13 @@ var patternGenerator = {
             startPoint = source.bars[0].length - newPattern.bars[0].length
         }
         source.bars.forEach(function(samplePattern, i) {
-            newPattern.bars[i].forEach(function(newBar, j) {
-                if (!params.merge || newBar) {
-                    samplePattern[j + startPoint] = newBar;
-                }
-            });
+            if (newPattern.bars[i]) {
+                newPattern.bars[i].forEach(function(newBar, j) {
+                    if (!params.merge || newBar) {
+                        samplePattern[j + startPoint] = newBar;
+                    }
+                });
+            }
         });
         return source;
     },
@@ -474,7 +500,7 @@ RythmBox.prototype.loop = function() {
         var pattern = this.getPattern();
         this.state.set('currentPattern', pattern);
         this.bufferList.forEach(function(buffer, i) {
-            if (!this.muted[i]) {
+            if (!this.muted[i] && pattern.bars[i]) {
                 pattern.bars[i].forEach(function(play, bar) {
                     if (play) {
                         this.playChunk(buffer, bar, loopStartTime);
@@ -628,7 +654,11 @@ var rythmBox = new RythmBox({
     tempo: 160,
     urls: [
         '/sounds/kick.ogg',
-        '/sounds/snare.ogg'
+        '/sounds/snare.ogg',
+        '/sounds/hat_01.ogg',
+        '/sounds/hat_02.ogg',
+        '/sounds/hat_03.ogg',
+        '/sounds/crash.ogg'        
     ]
 });
 

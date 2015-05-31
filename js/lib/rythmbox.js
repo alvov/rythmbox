@@ -62,7 +62,7 @@ RythmBox.prototype.loop = function() {
         var pattern = this.getPattern();
         this.state.set('currentPattern', pattern);
         this.bufferList.forEach(function(buffer, i) {
-            if (!this.muted[i]) {
+            if (!this.muted[i] && pattern.bars[i]) {
                 pattern.bars[i].forEach(function(play, bar) {
                     if (play) {
                         this.playChunk(buffer, bar, loopStartTime);
