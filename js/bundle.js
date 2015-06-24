@@ -303,30 +303,51 @@ var Collection = function() {
         0: {
             plain: [
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+                    '1000000010000000',
+                    '0000100000001000',
+                    '0000000000000010',
+                    '0010001000100010',
+                    '1010101010101010',
+                    '0101000010001000'
                 ] },
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1]
-                ] },
-                { bars: [
-                    [1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
-                ] },
-                { bars: [
-                    [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0]
+                    '1000000010000000',
+                    '0000101000001000',
+                    '0000000000000010',
+                    '0010001000100010',
+                    '1010101010101010',
+                    '0101000010001000'
                 ] }
             ],
             breaks: [
                 { bars: [
-                    [0, 0, 0, 0],
-                    [1, 1, 1, 1]
+                    '10000',
+                    '00011',
+                    '00100'
+                ], merge: true },
+                { bars: [
+                    '10100',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '00100'
+                ], merge: true },
+                { bars: [
+                    '10010000',
+                    '00001101',
+                    '00100000',
+                    '00101010',
+                    '10100101',
+                    '10010000'
                 ] },
                 { bars: [
-                    [1, 0, 0],
-                    [0, 1, 1]
+                    '1001001000100000',
+                    '0000100100001110',
+                    '0000000001000000',
+                    '0010001000100010',
+                    '1010101010101110',
+                    '0101000001010000'
                 ] }
             ],
             filters: []
@@ -334,42 +355,70 @@ var Collection = function() {
         1: {
             plain: [
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                    [1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1, 1],
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    '1000000000100100',
+                    '0000100000001000',
+                    '0000000101000000',
+                    '0010001000100010',
+                    '1000000000100100',
+                    '0101010011010011'
                 ] },
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0],
-                    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1, 0],
-                    [1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    '1000000000100010',
+                    '0000100100001100',
+                    '0000001001000000',
+                    '0010001000100010',
+                    '1000100000100010',
+                    '0101010101010101'
                 ] },
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1],
-                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
-                    [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-                    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    '1000000000100000',
+                    '0000100001001001',
+                    '0000000100000000',
+                    '0010001001001010',
+                    '1000100010000001',
+                    '0101010010010101'
                 ] },
                 { bars: [
-                    [1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1],
-                    [0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0],
-                    [0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0],
-                    [0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-                    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+                    '1001000000100000',
+                    '0000100100001000',
+                    '0000001001000000',
+                    '0010001001000100',
+                    '1001000100100010',
+                    '0100010010010001'
                 ] }
             ],
             breaks: [
                 { bars: [
-                    [1, 0],
-                    [0, 1]
+                    '1010000000100000',
+                    '0000100100001111',
+                    '0100000001000000',
+                    '0010001000100010',
+                    '1010000010100010',
+                    '0100100101000101'
+                ] },
+                { bars: [
+                    '10010100',
+                    '01001011',
+                    '00100000',
+                    '10010010',
+                    '01000010',
+                    '00011100'
+                ] },
+                { bars: [
+                    '1010001001110100',
+                    '0000100100001000',
+                    '0000010000000011',
+                    '0010001000001010',
+                    '1000000100001000',
+                    '0101010110000000'
+                ] },
+                { bars: [
+                    '100100100',
+                    '000001001',
+                    '001010010',
+                    '001001001',
+                    '100100100',
+                    '010010010'
                 ] }
             ]
         }
@@ -386,8 +435,11 @@ var Collection = function() {
                 source = source[utils.random.number(0, source.length - 1)];
                 result = {
                     bars: source.bars.map(function(samplePattern) {
-                        return samplePattern.slice(0);
-                    })
+                        return Object.keys(Object(samplePattern)).map(function(i) {
+                            return Number(samplePattern[i]);
+                        });
+                    }),
+                    merge: source.merge
                 }
             }
             return result;
@@ -397,19 +449,13 @@ var Collection = function() {
 
 var patternGenerator = {
     collection: new Collection(),
-    replace: function(source, newPattern, params) {
-        var startPoint = 0;
-        params = objectAssign({
-            place: 'start',
-            merge: false
-        }, params);
-        if (params.place === 'end') {
-            startPoint = source.bars[0].length - newPattern.bars[0].length
-        }
+    replace: function(source, newPattern) {
+        var startPoint = source.bars[0].length - newPattern.bars[0].length;
+        var merge = Boolean(newPattern.merge);
         source.bars.forEach(function(samplePattern, i) {
             if (newPattern.bars[i]) {
                 newPattern.bars[i].forEach(function(newBar, j) {
-                    if (!params.merge || newBar) {
+                    if (!merge || newBar) {
                         samplePattern[j + startPoint] = newBar;
                     }
                 });
@@ -427,7 +473,7 @@ var patternGenerator = {
         pattern = this.collection.get(params.difficulty, 'plain');
         if (params.loopCount % 4 === 0) {
             patternBreak = this.collection.get(params.difficulty, 'breaks');
-            pattern = this.replace(pattern, patternBreak, { place: 'end' });
+            pattern = this.replace(pattern, patternBreak);
         }
         return pattern;
     }
@@ -484,7 +530,7 @@ var RythmBox = function(params) {
     this.bufferLoader = new BufferLoader(this.audioCtx, this.urls);
     this.bufferLoader.load().then(function(result) {
         this.bufferList = result;
-        this.loop();
+        this.loop(true);
     }.bind(this));
 
 };
@@ -494,23 +540,31 @@ RythmBox.prototype.getPattern = function() {
         difficulty: this.state.get('patternComplexity')
     });
 };
-RythmBox.prototype.loop = function() {
+RythmBox.prototype.loop = function(immediately) {
+    var pattern;
+
+    setTimeout(function() {
+        if (pattern) {
+            this.state.set('currentPattern', pattern);
+            var loopStartTime = this.audioCtx.currentTime;
+            this.bufferList.forEach(function(buffer, i) {
+                if (!this.muted[i] && pattern.bars[i]) {
+                    pattern.bars[i].forEach(function(play, bar) {
+                        if (play) {
+                            this.playChunk(buffer, bar, loopStartTime);
+                        }
+                    }.bind(this));
+                }
+            }.bind(this));
+            this.state.set('loopCount', this.state.get('loopCount') + 1);
+        }
+
+        this.loop();
+    }.bind(this), immediately ? 0 : 4 * 1000 * 60 / this.state.get('tempo'));
+
     if (this.state.get('playing')) {
-        var loopStartTime = this.audioCtx.currentTime;
-        var pattern = this.getPattern();
-        this.state.set('currentPattern', pattern);
-        this.bufferList.forEach(function(buffer, i) {
-            if (!this.muted[i] && pattern.bars[i]) {
-                pattern.bars[i].forEach(function(play, bar) {
-                    if (play) {
-                        this.playChunk(buffer, bar, loopStartTime);
-                    }
-                }.bind(this));
-            }
-        }.bind(this));
-        this.state.set('loopCount', this.state.get('loopCount') + 1);
+        pattern = this.getPattern();
     }
-    setTimeout(this.loop.bind(this), 4 * 1000 * 60 / this.state.get('tempo'));
 };
 RythmBox.prototype.playChunk = function(buffer, bar, startTime) {
     var source = this.audioCtx.createBufferSource();
@@ -654,11 +708,12 @@ var rythmBox = new RythmBox({
     tempo: 160,
     urls: [
         '/sounds/kick.ogg',
-        '/sounds/snare.ogg',
+        '/sounds/snare_01.ogg',
+        '/sounds/snare_02.ogg',
         '/sounds/hat_01.ogg',
         '/sounds/hat_02.ogg',
         '/sounds/hat_03.ogg',
-        '/sounds/crash.ogg'        
+        '/sounds/crash.ogg'
     ]
 });
 

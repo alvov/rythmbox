@@ -46,7 +46,7 @@ var RythmBox = function(params) {
     this.bufferLoader = new BufferLoader(this.audioCtx, this.urls);
     this.bufferLoader.load().then(function(result) {
         this.bufferList = result;
-        this.loop();
+        this.loop(true);
     }.bind(this));
 
 };
@@ -56,23 +56,31 @@ RythmBox.prototype.getPattern = function() {
         difficulty: this.state.get('patternComplexity')
     });
 };
-RythmBox.prototype.loop = function() {
+RythmBox.prototype.loop = function(immediately) {
+    var pattern;
+
+    setTimeout(function() {
+        if (pattern) {
+            this.state.set('currentPattern', pattern);
+            var loopStartTime = this.audioCtx.currentTime;
+            this.bufferList.forEach(function(buffer, i) {
+                if (!this.muted[i] && pattern.bars[i]) {
+                    pattern.bars[i].forEach(function(play, bar) {
+                        if (play) {
+                            this.playChunk(buffer, bar, loopStartTime);
+                        }
+                    }.bind(this));
+                }
+            }.bind(this));
+            this.state.set('loopCount', this.state.get('loopCount') + 1);
+        }
+
+        this.loop();
+    }.bind(this), immediately ? 0 : 4 * 1000 * 60 / this.state.get('tempo'));
+
     if (this.state.get('playing')) {
-        var loopStartTime = this.audioCtx.currentTime;
-        var pattern = this.getPattern();
-        this.state.set('currentPattern', pattern);
-        this.bufferList.forEach(function(buffer, i) {
-            if (!this.muted[i] && pattern.bars[i]) {
-                pattern.bars[i].forEach(function(play, bar) {
-                    if (play) {
-                        this.playChunk(buffer, bar, loopStartTime);
-                    }
-                }.bind(this));
-            }
-        }.bind(this));
-        this.state.set('loopCount', this.state.get('loopCount') + 1);
+        pattern = this.getPattern();
     }
-    setTimeout(this.loop.bind(this), 4 * 1000 * 60 / this.state.get('tempo'));
 };
 RythmBox.prototype.playChunk = function(buffer, bar, startTime) {
     var source = this.audioCtx.createBufferSource();
