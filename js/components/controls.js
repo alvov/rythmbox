@@ -1,13 +1,13 @@
 'use strict';
 
-var React = require('react');
-var Store = require('../stores/store');
-var Actions = require('../actions/actions');
+import React from 'react';
+import Store from '../stores/store';
+import Actions from '../actions/actions';
 
-var DIFFICULTY_LEVELS = 2;
+const DIFFICULTY_LEVELS = 2;
 
 var Controls = React.createClass({
-    render: function() {
+    render() {
         return (
             <div className="controls">
                 <PlayButton />
@@ -18,38 +18,38 @@ var Controls = React.createClass({
     }
 });
 var PlayButton = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return { playing: Store.getState().playing };
     },
-    componentDidMount: function() {
+    componentDidMount() {
         Store.addChangeListener(this.onPlayStateChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         Store.removeChangeListener(this.onPlayStateChange);
     },
-    togglePlay: function() {
+    togglePlay() {
         Actions.togglePlay(!this.state.playing);
     },
-    render: function() {
+    render() {
         return <button className="play-button" onClick={this.togglePlay}>{this.state.playing ? 'Stop' : 'Play'}</button>
     },
-    onPlayStateChange: function(key) {
+    onPlayStateChange(key) {
         if (key === 'playing') {
             this.setState({playing: Store.getState().playing});
         }
     }
 });
 var Tempo = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return { tempo: Store.getState().tempo };
     },
-    componentDidMount: function() {
+    componentDidMount() {
         Store.addChangeListener(this.onTempoChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         Store.removeChangeListener(this.onTempoChange);
     },
-    render: function() {
+    render() {
         return (
             <div className="tempo">
                 <label>Tempo</label>
@@ -58,29 +58,28 @@ var Tempo = React.createClass({
             </div>
         );
     },
-    setTempo: function(e) {
+    setTempo(e) {
         Actions.setTempo(Number(e.target.value));
     },
-    onTempoChange: function(key) {
+    onTempoChange(key) {
         if (key === 'tempo') {
             this.setState({ tempo: Store.getState().tempo });
         }
     }
 });
 var PatternComplexity = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return { complexity: Store.getState().patternComplexity };
     },
-    componentDidMount: function() {
+    componentDidMount() {
         Store.addChangeListener(this.onComplexityChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         Store.removeChangeListener(this.onComplexityChange);
     },
-    render: function() {
+    render() {
         var inputs = [];
-        var i = 0;
-        for (; i < DIFFICULTY_LEVELS; i++) {
+        for (let i = 0; i < DIFFICULTY_LEVELS; i++) {
             inputs.push(
                 <input type="radio" name="complexity"
                     key={i} id={'complexity' + i} value={i} onChange={this.setComplexity}
@@ -94,14 +93,14 @@ var PatternComplexity = React.createClass({
             </div>
         );
     },
-    setComplexity: function(e) {
+    setComplexity(e) {
         Actions.setComplexity(e.target.value);
     },
-    onComplexityChange: function(key) {
+    onComplexityChange(key) {
         if (key === 'patternComplexity') {
             this.setState({ complexity: Store.getState().patternComplexity });
         }
     }
 });
 
-module.exports = Controls;
+export default Controls;

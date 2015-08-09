@@ -1,31 +1,29 @@
 'use strict';
 
-var AppDispatcher = require('../dispatcher/app-dispatcher');
-var Actions = {
-    togglePlay: function(on) {
+import AppDispatcher from '../dispatcher/app-dispatcher';
+export default {
+    togglePlay(on) {
         AppDispatcher.dispatch({
             actionType: 'togglePlay',
-            on: on
+            on
         });
     },
-    toggleBuffer: function(id) {
+    toggleBuffer(id) {
         AppDispatcher.dispatch({
             actionType: 'toggleBuffer',
-            id: id
+            id
         });
     },
-    setTempo: function(tempo) {
+    setTempo(tempo) {
         AppDispatcher.dispatch({
             actionType: 'setTempo',
-            tempo: tempo
+            tempo
         });
     },
-    setComplexity: function(complexity) {
+    setComplexity(complexity) {
         AppDispatcher.dispatch({
             actionType: 'setComplexity',
-            complexity: complexity
+            complexity
         });
     }
 };
-
-module.exports = Actions;

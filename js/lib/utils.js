@@ -1,57 +1,65 @@
 'use strict';
 
-var PubSub = function(){
-    var hash = {};
-    this.subscribe = function(event, callback){
-        if (!hash[event]) {
-            hash[event] = [];
+var pubSubHash = Symbol('pubSubHash');
+class PubSub {
+    constructor() {
+        this[pubSubHash] = {};
+    }
+
+    subscribe(event, callback) {
+        if (!this[pubSubHash][event]) {
+            this[pubSubHash][event] = [];
         }
-        hash[event].push(callback);
-    };
-    this.unsubscribe = function(event, callback){
-        if (undefined === callback) {
-            hash[event] = [];
-        } else if (hash[event]){
-            hash[event].forEach(function(value, i){
+        this[pubSubHash][event].push(callback);
+    }
+
+    unsubscribe(event, callback) {
+        if (callback === undefined) {
+            this[pubSubHash][event] = [];
+        } else if (this[pubSubHash][event]) {
+            this[pubSubHash][event].forEach((value, i) => {
                 if (value === callback) {
-                    hash[event].splice(i, 1);
+                    this[pubSubHash][event].splice(i, 1);
                 }
             });
         }
-    };
-    this.publish = function(event, data){
-        if (hash[event]) {
-            hash[event].forEach(function(value){
+    }
+
+    publish(event, data) {
+        if (this[pubSubHash][event]) {
+            this[pubSubHash][event].forEach(value => {
                 value(data);
             });
         }
-    };
-};
-
-var ObservableValue = function(value){
-    var callbacks = [];
-    return {
-        value: value,
-        set: function(value){
-            this.value = value;
-            callbacks.forEach(function(callback){
-                callback(this.value);
-            }.bind(this));
-        },
-        onChange: function(callback){
-            callback(this.value);
-            callbacks.push(callback);
-        }
     }
-};
+}
+
+var observableValueCallbacks = Symbol('observableValueCallbacks');
+class ObservableValue {
+    constructor(value) {
+        this[observableValueCallbacks] = [];
+        this.value = value;
+    }
+
+    set(value) {
+        this.value = value;
+        this[observableValueCallbacks].forEach(callback => {
+            callback(this.value);
+        });
+    }
+
+    onChange(callback) {
+        callback(this.value);
+        this[observableValueCallbacks].push(callback);
+    }
+}
 
 var utils = {
-    extend: function(){
-        var i = 0,
-            l = arguments.length,
-            result = arguments[0],
-            key;
-        for (; ++i < l;) {
+    extend() {
+        var l = arguments.length;
+        var result = arguments[0];
+        var key;
+        for (let i = 0; ++i < l;) {
             if (typeof arguments[i] === 'object') {
                 for (key in arguments[i]) {
                     if (arguments[i].hasOwnProperty(key)) {
@@ -63,48 +71,43 @@ var utils = {
         return result;
     },
     random: {
-        number: function(min, max){
+        number(min, max) {
             min = undefined === min ? 0 : min;
             max = undefined === max ? 1 : max;
             return Math.floor(Math.random() * (max - min + 1)) + min;
         },
-        color: function(){
-            var color = [],
-                i = -1;
-            for (;++i < 3;) {
+        color() {
+            var color = [];
+            for (let i = -1; ++i < 3;) {
                 color.push(utils.random.number(0, 255));
             }
             return 'rgb(' + color.join() + ')';
         }
     },
     vectors: {
-        add: function(v1, v2){
-            return v1.map(function(value, i){
-                return value + v2[i];
-            });
+        add(v1, v2) {
+            return v1.map((value, i) => value + v2[i]);
         },
-        intersect: function(v1, v2){
-            return v1.reduce(function(prev, cur){
-                return prev || v2.indexOf(cur) !== -1;
-            }, false);
+        intersect(v1, v2){
+            return v1.reduce((prev, cur) => prev || v2.indexOf(cur) !== -1, false);
         }
     },
-    round: function(value, precision){
+    round(value, precision){
         return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
     },
     pubsub: new PubSub(),
     angle: {
         PI: 3.1415,
-        toRad: function(degrees){
+        toRad(degrees){
             return degrees * this.PI / 180;
         },
-        toDeg: function(radians){
+        toDeg(radians){
             return radians * 180 / this.PI;
         }
     },
-    observableValue: function(value){
+    observableValue(value){
         return new ObservableValue(value);
     }
 };
 
-module.exports = utils;
+export default utils;

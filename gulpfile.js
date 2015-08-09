@@ -1,12 +1,12 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
 var toVinyl = require('vinyl-source-stream');
-var reactify = require('reactify');
+var babelify = require('babelify');
 var stylus = require('gulp-stylus');
 var autoprefixer = require('gulp-autoprefixer');
 var nodeResolve = require('resolve');
 
-var VENDOR_MODULES = ['react', 'flux', 'object-assign', 'events'];
+var VENDOR_MODULES = ['react', 'flux', 'events'];
 
 gulp.task('vendor', function() {
     var b = browserify();
@@ -20,8 +20,8 @@ gulp.task('vendor', function() {
 
 gulp.task('js', function() {
     var b = browserify({
-        entries: './js/app.js',
-        transform: [reactify]
+        entries: [require.resolve('babelify/polyfill'), './js/app.js'],
+        transform: [babelify]
     });
     VENDOR_MODULES.forEach(function(id) {
         b.external(id);
@@ -46,7 +46,7 @@ gulp.task('css', function() {
 
 gulp.task('build', ['js', 'css']);
 
-gulp.task('watch', function() {
+gulp.task('watch', ['js', 'css'], function() {
     gulp.watch('./js/*/*.js', ['js']);
     gulp.watch('./css/*.styl', ['css']);
 });

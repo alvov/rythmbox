@@ -49,7 +49,7 @@ process.nextTick = function (fun) {
         }
     }
     queue.push(new Item(fun, args));
-    if (!draining) {
+    if (queue.length === 1 && !draining) {
         setTimeout(drainQueue, 0);
     }
 };
@@ -20427,35 +20427,7 @@ function isUndefined(arg) {
 
 module.exports.Dispatcher = require('./lib/Dispatcher')
 
-},{"./lib/Dispatcher":2}],"object-assign":[function(require,module,exports){
-'use strict';
-
-function ToObject(val) {
-	if (val == null) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-module.exports = Object.assign || function (target, source) {
-	var from;
-	var keys;
-	var to = ToObject(target);
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = arguments[s];
-		keys = Object.keys(Object(from));
-
-		for (var i = 0; i < keys.length; i++) {
-			to[keys[i]] = from[keys[i]];
-		}
-	}
-
-	return to;
-};
-
-},{}],"react":[function(require,module,exports){
+},{"./lib/Dispatcher":2}],"react":[function(require,module,exports){
 module.exports = require('./lib/React');
 
 },{"./lib/React":31}]},{},[]);

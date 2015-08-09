@@ -1,9 +1,8 @@
 'use strict';
 
-var AppDispatcher = require('../dispatcher/app-dispatcher');
-var EventEmitter = require('events').EventEmitter;
-var RythmBox = require('../lib/rythmbox');
-var objectAssign = require('object-assign');
+import AppDispatcher from '../dispatcher/app-dispatcher';
+import { EventEmitter } from 'events';
+import RythmBox from '../lib/rythmbox';
 
 var rythmBox = new RythmBox({
     tempo: 160,
@@ -18,24 +17,24 @@ var rythmBox = new RythmBox({
     ]
 });
 
-var Store = objectAssign({}, EventEmitter.prototype, {
-    getState: function() {
+var Store = Object.assign({}, EventEmitter.prototype, {
+    getState() {
         return rythmBox.state.get();
     },
-    getBufferName: function(id) {
+    getBufferName(id) {
         var url = rythmBox.urls[id];
         return url.split('/').pop();
     },
-    addChangeListener: function(callback) {
+    addChangeListener(callback) {
         this.on('change', callback);
     },
-    removeChangeListener: function(callback) {
+    removeChangeListener(callback) {
         this.removeListener('change', callback);
     },
-    emitChange: function(key) {
+    emitChange(key) {
         this.emit('change', key);
     },
-    dispatcherIndex: AppDispatcher.register(function(action) {
+    dispatcherIndex: AppDispatcher.register(action => {
         switch(action.actionType) {
             case 'setTempo':
                 rythmBox.state.set('tempo', action.tempo);
@@ -68,4 +67,4 @@ var Store = objectAssign({}, EventEmitter.prototype, {
 
 rythmBox.onChange(Store.emitChange.bind(Store));
 
-module.exports = Store;
+export default Store;

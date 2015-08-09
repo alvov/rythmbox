@@ -1,17 +1,17 @@
 'use strict';
 
-var React = require('react');
-var Store = require('../stores/store');
-var Actions = require('../actions/actions');
+import React from 'react';
+import Store from '../stores/store';
+import Actions from '../actions/actions';
 
 var SampleBar = React.createClass({
-    render: function() {
-        var className = ['bar', this.props.className].join(' ');
+    render() {
+        var className = `bar ${this.props.className}`;
         return <div className={className} />;
     }
 });
 var TimelineToggle = React.createClass({
-    render: function() {
+    render() {
         return <button className="toggle" onClick={this.props.onclick}>{this.props.children}</button>
     }
 });
@@ -19,18 +19,18 @@ var SampleTimeline = React.createClass({
     propTypes: {
         samplePattern: React.PropTypes.arrayOf(React.PropTypes.number).isRequired
     },
-    getInitialState: function() {
+    getInitialState() {
         return {
             name: '',
             muted: false
         };
     },
-    componentDidMount: function() {
+    componentDidMount() {
         this.setState({ name: Store.getBufferName(this.props.id) });
     },
-    render: function() {
-        var bars = this.props.samplePattern.map(function(play) {
-            var barClass = play ? 'fill' : 'empty';
+    render() {
+        var bars = this.props.samplePattern.map(play => {
+            let barClass = play ? 'fill' : 'empty';
             return <SampleBar className={barClass} />;
         });
         return (
@@ -40,23 +40,23 @@ var SampleTimeline = React.createClass({
             </div>
         );
     },
-    toggle: function() {
+    toggle() {
         this.setState({ muted: !this.state.muted });
         Actions.toggleBuffer(this.props.id);
     }
 });
 var TimelineCursor = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return { cursorPos: 0 }
     },
-    render: function() {
+    render() {
         return <div className="cursor" style={{left: this.state.cursorPos + '%'}} />;
     },
     interval: null,
-    reset: function(tempo) {
+    reset(tempo) {
         var i = 0;
         clearInterval(this.interval);
-        this.interval = setInterval(function() {
+        this.interval = setInterval(() => {
             i++;
             this.setState({ cursorPos: i * 100 / 16 });
             if (i === 16) {
@@ -64,24 +64,24 @@ var TimelineCursor = React.createClass({
                 this.interval = null;
                 this.setState({ cursorPos: 0 });
             }
-        }.bind(this), 1000 * 15 / tempo);
+        }, 1000 * 15 / tempo);
         this.setState({ cursorPos: 0 });
     }
 });
 var SamplesTimeline = React.createClass({
-    getInitialState: function() {
+    getInitialState() {
         return { pattern: Store.getState().currentPattern };
     },
-    componentDidMount: function() {
+    componentDidMount() {
         Store.addChangeListener(this.onStateChange);
     },
-    componentWillUnmount: function() {
+    componentWillUnmount() {
         Store.removeChangeListener(this.onStateChange);
     },
-    render: function() {
-        var samplesLines = this.state.pattern.bars.map(function(samplePattern, i) {
-            return <SampleTimeline id={i} samplePattern={samplePattern}/>;
-        });
+    render() {
+        var samplesLines = this.state.pattern.bars.map(
+            (samplePattern, i) => <SampleTimeline id={i} samplePattern={samplePattern}/>
+        );
         return (
             <div className="box clearfix">
                 <TimelineCursor ref="cursor" />
@@ -89,13 +89,13 @@ var SamplesTimeline = React.createClass({
             </div>
         );
     },
-    onStateChange: function(key) {
+    onStateChange(key) {
         if (key === 'currentPattern') {
-            var rythmBoxState = Store.getState();
+            let rythmBoxState = Store.getState();
             this.setState({ pattern: rythmBoxState.currentPattern });
             this.refs.cursor.reset(rythmBoxState.tempo);
         }
     }
 });
 
-module.exports = SamplesTimeline;
+export default SamplesTimeline;

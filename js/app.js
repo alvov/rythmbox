@@ -1,8 +1,8 @@
 'use strict';
 
-var React = require('react');
-var SamplesTimeline = require('./components/samples-timeline');
-var Controls = require('./components/controls');
+import React from 'react';
+import SamplesTimeline from './components/samples-timeline';
+import Controls from './components/controls';
 
 React.render(
     <SamplesTimeline />,
