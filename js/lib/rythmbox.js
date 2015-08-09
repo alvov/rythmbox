@@ -2,10 +2,18 @@
 
 import patternGenerator from './rythmbox-pattern-generator';
 import BufferLoader from './rythmbox-buffer-loader';
+import utils from './utils'
+
+var state = Symbol('state');
 
 export default class Rythmbox {
     constructor(params) {
-        var state = {
+        this.muted = {};
+
+        this.urls = params.urls;
+        this.audioCtx = null;
+        this.changeCallbacks = [];
+        this[state] = utils.dataset({
             tempo: params.tempo,
             playing: true,
             loopCount: 1,
@@ -13,28 +21,7 @@ export default class Rythmbox {
             currentPattern: {
                 bars: []
             }
-        };
-        this.muted = {};
-
-        this.urls = params.urls;
-        this.audioCtx = null;
-        this.changeCallbacks = [];
-        this.state = {
-            get(key) {
-                if (key === undefined) {
-                    return Object.assign({}, state);
-                }
-                return state[key];
-            },
-            set: function(key, value) {
-                if (state[key] !== value) {
-                    state[key] = value;
-                    this.changeCallbacks.forEach(callback => {
-                        callback(key);
-                    });
-                }
-            }.bind(this)
-        };
+        });
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioCtx = new AudioContext();
@@ -56,8 +43,8 @@ export default class Rythmbox {
 
     getPattern() {
         return patternGenerator.getPattern({
-            loopCount: this.state.get('loopCount'),
-            difficulty: this.state.get('patternComplexity')
+            loopCount: this[state].get('loopCount'),
+            difficulty: this[state].get('patternComplexity')
         });
     }
 
@@ -65,7 +52,7 @@ export default class Rythmbox {
         var pattern;
         setTimeout(() => {
             if (pattern) {
-                this.state.set('currentPattern', pattern);
+                this.setState({ currentPattern: pattern });
                 var loopStartTime = this.audioCtx.currentTime;
                 this.bufferList.forEach((buffer, i) => {
                     if (!this.muted[i] && pattern.bars[i]) {
@@ -76,13 +63,13 @@ export default class Rythmbox {
                         });
                     }
                 });
-                this.state.set('loopCount', this.state.get('loopCount') + 1);
+                this.setState({ loopCount: this[state].get('loopCount') + 1 });
             }
 
             this.loop();
-        }, immediately ? 0 : 4 * 1000 * 60 / this.state.get('tempo'));
+        }, immediately ? 0 : 4 * 1000 * 60 / this[state].get('tempo'));
 
-        if (this.state.get('playing')) {
+        if (this[state].get('playing')) {
             pattern = this.getPattern();
         }
     }
@@ -91,15 +78,28 @@ export default class Rythmbox {
         var source = this.audioCtx.createBufferSource();
         source.buffer = buffer;
         source.connect(this.audioCtx.destination);
-        source.start(startTime + bar * 15 / this.state.get('tempo'));
+        source.start(startTime + bar * 15 / this[state].get('tempo'));
     }
 
     play() {
-        this.state.set('playing', true);
+        this.setState({ playing: true });
     }
 
     stop() {
-        this.state.set('playing', false);
+        this.setState({ playing: false });
+    }
+
+    getState() {
+        return this[state].get();
+    }
+
+    setState(data) {
+        var delta = this[state].set(data);
+        Object.keys(delta).forEach(key => {
+            this.changeCallbacks.forEach(callback => {
+                callback(key);
+            });
+        })
     }
 
     onChange(callback) {

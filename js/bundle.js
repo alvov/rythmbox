@@ -419,59 +419,57 @@ var _utils = require('./utils');
 
 var _utils2 = _interopRequireDefault(_utils);
 
-var collection = Symbol('collection');
+var collection = {
+    0: {
+        plain: [{
+            bars: ['1000000010000000', '0000100000001000', '0000000000000010', '0010001000100010', '1010101010101010', '0101000010001000']
+        }, {
+            bars: ['1000000010000000', '0000101000001000', '0000000000000010', '0010001000100010', '1010101010101010', '0101000010001000']
+        }],
+        breaks: [{
+            bars: ['10000', '00011', '00100'], merge: true
+        }, {
+            bars: ['10100', '', '', '', '', '00100'], merge: true
+        }, {
+            bars: ['10010000', '00001101', '00100000', '00101010', '10100101', '10010000']
+        }, {
+            bars: ['1001001000100000', '0000100100001110', '0000000001000000', '0010001000100010', '1010101010101110', '0101000001010000']
+        }],
+        filters: []
+    },
+    1: {
+        plain: [{
+            bars: ['1000000000100100', '0000100000001000', '0000000101000000', '0010001000100010', '1000000000100100', '0101010011010011']
+        }, {
+            bars: ['1000000000100010', '0000100100001100', '0000001001000000', '0010001000100010', '1000100000100010', '0101010101010101']
+        }, {
+            bars: ['1000000000100000', '0000100001001001', '0000000100000000', '0010001001001010', '1000100010000001', '0101010010010101']
+        }, {
+            bars: ['1001000000100000', '0000100100001000', '0000001001000000', '0010001001000100', '1001000100100010', '0100010010010001']
+        }],
+        breaks: [{
+            bars: ['1010000000100000', '0000100100001111', '0100000001000000', '0010001000100010', '1010000010100010', '0100100101000101']
+        }, {
+            bars: ['10010100', '01001011', '00100000', '10010010', '01000010', '00011100']
+        }, {
+            bars: ['1010001001110100', '0000100100001000', '0000010000000011', '0010001000001010', '1000000100001000', '0101010110000000']
+        }, {
+            bars: ['100100100', '000001001', '001010010', '001001001', '100100100', '010010010']
+        }]
+    }
+};
 
 var Collection = (function () {
     function Collection() {
         _classCallCheck(this, Collection);
-
-        this[collection] = {
-            0: {
-                plain: [{
-                    bars: ['1000000010000000', '0000100000001000', '0000000000000010', '0010001000100010', '1010101010101010', '0101000010001000']
-                }, {
-                    bars: ['1000000010000000', '0000101000001000', '0000000000000010', '0010001000100010', '1010101010101010', '0101000010001000']
-                }],
-                breaks: [{
-                    bars: ['10000', '00011', '00100'], merge: true
-                }, {
-                    bars: ['10100', '', '', '', '', '00100'], merge: true
-                }, {
-                    bars: ['10010000', '00001101', '00100000', '00101010', '10100101', '10010000']
-                }, {
-                    bars: ['1001001000100000', '0000100100001110', '0000000001000000', '0010001000100010', '1010101010101110', '0101000001010000']
-                }],
-                filters: []
-            },
-            1: {
-                plain: [{
-                    bars: ['1000000000100100', '0000100000001000', '0000000101000000', '0010001000100010', '1000000000100100', '0101010011010011']
-                }, {
-                    bars: ['1000000000100010', '0000100100001100', '0000001001000000', '0010001000100010', '1000100000100010', '0101010101010101']
-                }, {
-                    bars: ['1000000000100000', '0000100001001001', '0000000100000000', '0010001001001010', '1000100010000001', '0101010010010101']
-                }, {
-                    bars: ['1001000000100000', '0000100100001000', '0000001001000000', '0010001001000100', '1001000100100010', '0100010010010001']
-                }],
-                breaks: [{
-                    bars: ['1010000000100000', '0000100100001111', '0100000001000000', '0010001000100010', '1010000010100010', '0100100101000101']
-                }, {
-                    bars: ['10010100', '01001011', '00100000', '10010010', '01000010', '00011100']
-                }, {
-                    bars: ['1010001001110100', '0000100100001000', '0000010000000011', '0010001000001010', '1000000100001000', '0101010110000000']
-                }, {
-                    bars: ['100100100', '000001001', '001010010', '001001001', '100100100', '010010010']
-                }]
-            }
-        };
     }
 
     _createClass(Collection, [{
         key: 'get',
         value: function get(difficulty, category) {
-            var source = this[collection][difficulty];
+            var source = collection[difficulty];
             if (source === undefined) {
-                source = this[collection][Math.max.apply(Math, _toConsumableArray(Object.keys(this[collection])))];
+                source = collection[Math.max.apply(Math, _toConsumableArray(Object.keys(collection)))];
             }
             source = source[category];
             var result = source;
@@ -547,13 +545,24 @@ var _rythmboxBufferLoader = require('./rythmbox-buffer-loader');
 
 var _rythmboxBufferLoader2 = _interopRequireDefault(_rythmboxBufferLoader);
 
+var _utils = require('./utils');
+
+var _utils2 = _interopRequireDefault(_utils);
+
+var state = Symbol('state');
+
 var Rythmbox = (function () {
     function Rythmbox(params) {
         var _this = this;
 
         _classCallCheck(this, Rythmbox);
 
-        var state = {
+        this.muted = {};
+
+        this.urls = params.urls;
+        this.audioCtx = null;
+        this.changeCallbacks = [];
+        this[state] = _utils2['default'].dataset({
             tempo: params.tempo,
             playing: true,
             loopCount: 1,
@@ -561,28 +570,7 @@ var Rythmbox = (function () {
             currentPattern: {
                 bars: []
             }
-        };
-        this.muted = {};
-
-        this.urls = params.urls;
-        this.audioCtx = null;
-        this.changeCallbacks = [];
-        this.state = {
-            get: function get(key) {
-                if (key === undefined) {
-                    return Object.assign({}, state);
-                }
-                return state[key];
-            },
-            set: (function (key, value) {
-                if (state[key] !== value) {
-                    state[key] = value;
-                    this.changeCallbacks.forEach(function (callback) {
-                        callback(key);
-                    });
-                }
-            }).bind(this)
-        };
+        });
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioCtx = new AudioContext();
@@ -603,8 +591,8 @@ var Rythmbox = (function () {
         key: 'getPattern',
         value: function getPattern() {
             return _rythmboxPatternGenerator2['default'].getPattern({
-                loopCount: this.state.get('loopCount'),
-                difficulty: this.state.get('patternComplexity')
+                loopCount: this[state].get('loopCount'),
+                difficulty: this[state].get('patternComplexity')
             });
         }
     }, {
@@ -615,7 +603,7 @@ var Rythmbox = (function () {
             var pattern;
             setTimeout(function () {
                 if (pattern) {
-                    _this2.state.set('currentPattern', pattern);
+                    _this2.setState({ currentPattern: pattern });
                     var loopStartTime = _this2.audioCtx.currentTime;
                     _this2.bufferList.forEach(function (buffer, i) {
                         if (!_this2.muted[i] && pattern.bars[i]) {
@@ -626,13 +614,13 @@ var Rythmbox = (function () {
                             });
                         }
                     });
-                    _this2.state.set('loopCount', _this2.state.get('loopCount') + 1);
+                    _this2.setState({ loopCount: _this2[state].get('loopCount') + 1 });
                 }
 
                 _this2.loop();
-            }, immediately ? 0 : 4 * 1000 * 60 / this.state.get('tempo'));
+            }, immediately ? 0 : 4 * 1000 * 60 / this[state].get('tempo'));
 
-            if (this.state.get('playing')) {
+            if (this[state].get('playing')) {
                 pattern = this.getPattern();
             }
         }
@@ -642,17 +630,34 @@ var Rythmbox = (function () {
             var source = this.audioCtx.createBufferSource();
             source.buffer = buffer;
             source.connect(this.audioCtx.destination);
-            source.start(startTime + bar * 15 / this.state.get('tempo'));
+            source.start(startTime + bar * 15 / this[state].get('tempo'));
         }
     }, {
         key: 'play',
         value: function play() {
-            this.state.set('playing', true);
+            this.setState({ playing: true });
         }
     }, {
         key: 'stop',
         value: function stop() {
-            this.state.set('playing', false);
+            this.setState({ playing: false });
+        }
+    }, {
+        key: 'getState',
+        value: function getState() {
+            return this[state].get();
+        }
+    }, {
+        key: 'setState',
+        value: function setState(data) {
+            var _this3 = this;
+
+            var delta = this[state].set(data);
+            Object.keys(delta).forEach(function (key) {
+                _this3.changeCallbacks.forEach(function (callback) {
+                    callback(key);
+                });
+            });
         }
     }, {
         key: 'onChange',
@@ -667,7 +672,7 @@ var Rythmbox = (function () {
 exports['default'] = Rythmbox;
 module.exports = exports['default'];
 
-},{"./rythmbox-buffer-loader":6,"./rythmbox-pattern-generator":7}],9:[function(require,module,exports){
+},{"./rythmbox-buffer-loader":6,"./rythmbox-pattern-generator":7,"./utils":9}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -755,22 +760,45 @@ var ObservableValue = (function () {
     return ObservableValue;
 })();
 
-var utils = {
-    extend: function extend() {
-        var l = arguments.length;
-        var result = arguments[0];
-        var key;
-        for (var i = 0; ++i < l;) {
-            if (typeof arguments[i] === 'object') {
-                for (key in arguments[i]) {
-                    if (arguments[i].hasOwnProperty(key)) {
-                        result[key] = arguments[i][key];
-                    }
-                }
-            }
+var datasetState = Symbol('datasetState');
+
+var Dataset = (function () {
+    function Dataset(params) {
+        _classCallCheck(this, Dataset);
+
+        if (params) {
+            this[datasetState] = params;
         }
-        return result;
-    },
+    }
+
+    _createClass(Dataset, [{
+        key: 'get',
+        value: function get(key) {
+            if (key === undefined) {
+                return Object.assign({}, this[datasetState]);
+            }
+            return this[datasetState][key];
+        }
+    }, {
+        key: 'set',
+        value: function set(newData) {
+            var _this3 = this;
+
+            var delta = {};
+            Object.keys(newData).forEach(function (key) {
+                if (_this3[datasetState][key] !== newData[key]) {
+                    _this3[datasetState][key] = newData[key];
+                    delta[key] = newData[key];
+                }
+            });
+            return delta;
+        }
+    }]);
+
+    return Dataset;
+})();
+
+var utils = {
     random: {
         number: function number(min, max) {
             min = undefined === min ? 0 : min;
@@ -812,6 +840,9 @@ var utils = {
     },
     observableValue: function observableValue(value) {
         return new ObservableValue(value);
+    },
+    dataset: function dataset(params) {
+        return new Dataset(params);
     }
 };
 
@@ -837,17 +868,17 @@ var _libRythmbox = require('../lib/rythmbox');
 
 var _libRythmbox2 = _interopRequireDefault(_libRythmbox);
 
-var rythmBox = new _libRythmbox2['default']({
+var rythmbox = new _libRythmbox2['default']({
     tempo: 160,
     urls: ['/sounds/kick.ogg', '/sounds/snare_01.ogg', '/sounds/snare_02.ogg', '/sounds/hat_01.ogg', '/sounds/hat_02.ogg', '/sounds/hat_03.ogg', '/sounds/crash.ogg']
 });
 
 var Store = Object.assign({}, _events.EventEmitter.prototype, {
     getState: function getState() {
-        return rythmBox.state.get();
+        return rythmbox.getState();
     },
     getBufferName: function getBufferName(id) {
-        var url = rythmBox.urls[id];
+        var url = rythmbox.urls[id];
         return url.split('/').pop();
     },
     addChangeListener: function addChangeListener(callback) {
@@ -862,26 +893,26 @@ var Store = Object.assign({}, _events.EventEmitter.prototype, {
     dispatcherIndex: _dispatcherAppDispatcher2['default'].register(function (action) {
         switch (action.actionType) {
             case 'setTempo':
-                rythmBox.state.set('tempo', action.tempo);
+                rythmbox.setState({ tempo: action.tempo });
                 break;
 
             case 'setComplexity':
-                rythmBox.state.set('patternComplexity', action.complexity);
+                rythmbox.setState({ patternComplexity: action.complexity });
                 break;
 
             case 'togglePlay':
                 if (action.on) {
-                    rythmBox.play();
+                    rythmbox.play();
                 } else {
-                    rythmBox.stop();
+                    rythmbox.stop();
                 }
                 break;
 
             case 'toggleBuffer':
-                if (rythmBox.muted[action.id]) {
-                    delete rythmBox.muted[action.id];
+                if (rythmbox.muted[action.id]) {
+                    delete rythmbox.muted[action.id];
                 } else {
-                    rythmBox.muted[action.id] = true;
+                    rythmbox.muted[action.id] = true;
                 }
                 break;
         }
@@ -890,7 +921,7 @@ var Store = Object.assign({}, _events.EventEmitter.prototype, {
     })
 });
 
-rythmBox.onChange(Store.emitChange.bind(Store));
+rythmbox.onChange(Store.emitChange.bind(Store));
 
 exports['default'] = Store;
 module.exports = exports['default'];

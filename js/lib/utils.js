@@ -54,22 +54,32 @@ class ObservableValue {
     }
 }
 
-var utils = {
-    extend() {
-        var l = arguments.length;
-        var result = arguments[0];
-        var key;
-        for (let i = 0; ++i < l;) {
-            if (typeof arguments[i] === 'object') {
-                for (key in arguments[i]) {
-                    if (arguments[i].hasOwnProperty(key)) {
-                        result[key] = arguments[i][key];
-                    }
-                }
-            }
+var datasetState = Symbol('datasetState');
+class Dataset {
+    constructor(params) {
+        if (params) {
+            this[datasetState] = params;
         }
-        return result;
-    },
+    }
+    get(key) {
+        if (key === undefined) {
+            return Object.assign({}, this[datasetState]);
+        }
+        return this[datasetState][key];
+    }
+    set(newData) {
+        var delta = {};
+        Object.keys(newData).forEach(key => {
+            if (this[datasetState][key] !== newData[key]) {
+                this[datasetState][key] = newData[key];
+                delta[key] = newData[key];
+            }
+        });
+        return delta;
+    }
+}
+
+var utils = {
     random: {
         number(min, max) {
             min = undefined === min ? 0 : min;
@@ -88,25 +98,28 @@ var utils = {
         add(v1, v2) {
             return v1.map((value, i) => value + v2[i]);
         },
-        intersect(v1, v2){
+        intersect(v1, v2) {
             return v1.reduce((prev, cur) => prev || v2.indexOf(cur) !== -1, false);
         }
     },
-    round(value, precision){
+    round(value, precision) {
         return Math.round(value * Math.pow(10, precision)) / Math.pow(10, precision);
     },
     pubsub: new PubSub(),
     angle: {
         PI: 3.1415,
-        toRad(degrees){
+        toRad(degrees) {
             return degrees * this.PI / 180;
         },
-        toDeg(radians){
+        toDeg(radians) {
             return radians * 180 / this.PI;
         }
     },
-    observableValue(value){
+    observableValue(value) {
         return new ObservableValue(value);
+    },
+    dataset(params) {
+        return new Dataset(params);
     }
 };
 

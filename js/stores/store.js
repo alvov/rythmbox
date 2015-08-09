@@ -2,9 +2,9 @@
 
 import AppDispatcher from '../dispatcher/app-dispatcher';
 import { EventEmitter } from 'events';
-import RythmBox from '../lib/rythmbox';
+import Rythmbox from '../lib/rythmbox';
 
-var rythmBox = new RythmBox({
+var rythmbox = new Rythmbox({
     tempo: 160,
     urls: [
         '/sounds/kick.ogg',
@@ -19,10 +19,10 @@ var rythmBox = new RythmBox({
 
 var Store = Object.assign({}, EventEmitter.prototype, {
     getState() {
-        return rythmBox.state.get();
+        return rythmbox.getState();
     },
     getBufferName(id) {
-        var url = rythmBox.urls[id];
+        var url = rythmbox.urls[id];
         return url.split('/').pop();
     },
     addChangeListener(callback) {
@@ -37,26 +37,26 @@ var Store = Object.assign({}, EventEmitter.prototype, {
     dispatcherIndex: AppDispatcher.register(action => {
         switch(action.actionType) {
             case 'setTempo':
-                rythmBox.state.set('tempo', action.tempo);
+                rythmbox.setState({ tempo: action.tempo });
                 break;
 
             case 'setComplexity':
-                rythmBox.state.set('patternComplexity', action.complexity);
+                rythmbox.setState({ patternComplexity: action.complexity });
                 break;
 
             case 'togglePlay':
                 if (action.on) {
-                    rythmBox.play();
+                    rythmbox.play();
                 } else {
-                    rythmBox.stop();
+                    rythmbox.stop();
                 }
                 break;
 
             case 'toggleBuffer':
-                if (rythmBox.muted[action.id]) {
-                    delete rythmBox.muted[action.id];
+                if (rythmbox.muted[action.id]) {
+                    delete rythmbox.muted[action.id];
                 } else {
-                    rythmBox.muted[action.id] = true;
+                    rythmbox.muted[action.id] = true;
                 }
                 break;
         }
@@ -65,6 +65,6 @@ var Store = Object.assign({}, EventEmitter.prototype, {
     })
 });
 
-rythmBox.onChange(Store.emitChange.bind(Store));
+rythmbox.onChange(Store.emitChange.bind(Store));
 
 export default Store;
