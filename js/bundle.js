@@ -380,14 +380,11 @@ var BufferLoader = (function () {
             var _this = this;
 
             return new Promise(function (resolve, reject) {
-                var request = new XMLHttpRequest();
-                request.open('GET', url, true);
-                request.responseType = 'arraybuffer';
-                request.onload = (function () {
-                    this.context.decodeAudioData(request.response, resolve, reject);
-                }).bind(_this);
-                request.onerror = reject;
-                request.send();
+                fetch(url).then(function (response) {
+                    response.arrayBuffer().then(function (buffer) {
+                        _this.context.decodeAudioData(buffer, resolve, reject);
+                    });
+                })['catch'](reject);
             });
         }
     }, {

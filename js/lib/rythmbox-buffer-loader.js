@@ -8,14 +8,14 @@ export default class BufferLoader {
 
     loadSample(url) {
         return new Promise((resolve, reject) => {
-            var request = new XMLHttpRequest();
-            request.open('GET', url, true);
-            request.responseType = 'arraybuffer';
-            request.onload = function() {
-                this.context.decodeAudioData(request.response, resolve, reject);
-            }.bind(this);
-            request.onerror = reject;
-            request.send();
+            fetch(url)
+                .then(response => {
+                    response.arrayBuffer().then(buffer => {
+                        this.context.decodeAudioData(buffer, resolve, reject)
+                    });
+                })
+                .catch(reject)
+            ;
         });
     }
 
