@@ -7,13 +7,13 @@ import Rythmbox from '../lib/rythmbox/rythmbox';
 var rythmbox = new Rythmbox({
     tempo: 160,
     urls: [
-        '/sounds/kick.ogg',
-        '/sounds/snare_01.ogg',
-        '/sounds/snare_02.ogg',
-        '/sounds/hat_01.ogg',
-        '/sounds/hat_02.ogg',
-        '/sounds/hat_03.ogg',
-        '/sounds/crash.ogg'
+        './sounds/kick.ogg',
+        './sounds/snare_01.ogg',
+        './sounds/snare_02.ogg',
+        './sounds/hat_01.ogg',
+        './sounds/hat_02.ogg',
+        './sounds/hat_03.ogg',
+        './sounds/crash.ogg'
     ]
 });
 

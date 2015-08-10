@@ -1019,7 +1019,7 @@ var _libRythmboxRythmbox2 = _interopRequireDefault(_libRythmboxRythmbox);
 
 var rythmbox = new _libRythmboxRythmbox2['default']({
     tempo: 160,
-    urls: ['/sounds/kick.ogg', '/sounds/snare_01.ogg', '/sounds/snare_02.ogg', '/sounds/hat_01.ogg', '/sounds/hat_02.ogg', '/sounds/hat_03.ogg', '/sounds/crash.ogg']
+    urls: ['./sounds/kick.ogg', './sounds/snare_01.ogg', './sounds/snare_02.ogg', './sounds/hat_01.ogg', './sounds/hat_02.ogg', './sounds/hat_03.ogg', './sounds/crash.ogg']
 });
 
 var Store = Object.assign({}, _events.EventEmitter.prototype, {
