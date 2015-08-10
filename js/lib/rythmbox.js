@@ -44,7 +44,7 @@ export default class Rythmbox {
     getPattern() {
         return patternGenerator.getPattern({
             loopCount: this[state].get('loopCount'),
-            difficulty: this[state].get('patternComplexity')
+            complexity: this[state].get('patternComplexity')
         });
     }
 

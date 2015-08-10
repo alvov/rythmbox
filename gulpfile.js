@@ -1,6 +1,6 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
-var toVinyl = require('vinyl-source-stream');
+var source = require('vinyl-source-stream');
 var babelify = require('babelify');
 var stylus = require('gulp-stylus');
 var autoprefixer = require('gulp-autoprefixer');
@@ -10,24 +10,25 @@ var VENDOR_MODULES = ['react', 'flux', 'events'];
 
 gulp.task('vendor', function() {
     var b = browserify();
+    b.require(require.resolve('babelify/polyfill'));
     VENDOR_MODULES.forEach(function(id) {
         b.require(nodeResolve.sync(id), { expose: id });
     });
     return b.bundle()
-        .pipe(toVinyl('vendor.js'))
+        .pipe(source('vendor.js'))
         .pipe(gulp.dest('./js/'));
 });
 
 gulp.task('js', function() {
     var b = browserify({
-        entries: [require.resolve('babelify/polyfill'), './js/app.js'],
+        entries: ['./js/app.js'],
         transform: [babelify]
     });
     VENDOR_MODULES.forEach(function(id) {
         b.external(id);
     });
     return b.bundle()
-        .pipe(toVinyl('bundle.js'))
+        .pipe(source('bundle.js'))
         .pipe(gulp.dest('./js/'));
 });
 

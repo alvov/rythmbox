@@ -32,7 +32,8 @@ var collection = {
                     '10000',
                     '00011',
                     '00100'
-                ], merge: true
+                ],
+                merge: true
             },
             {
                 bars: [
@@ -42,7 +43,8 @@ var collection = {
                     '',
                     '',
                     '00100'
-                ], merge: true
+                ],
+                merge: true
             },
             {
                 bars: [
@@ -65,7 +67,22 @@ var collection = {
                 ]
             }
         ],
-        filters: []
+        filters: [],
+        crash: [
+            {
+                bars: [
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '1'
+                ],
+                merge: true,
+                startPoint: 0
+            }
+        ]
     },
     1: {
         plain: [
@@ -151,25 +168,45 @@ var collection = {
                     '010010010'
                 ]
             }
+        ],
+        crash: [
+            {
+                bars: [
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '',
+                    '1'
+                ],
+                merge: true,
+                startPoint: 0
+            }
         ]
     }
 };
 
 class Collection {
-    get(difficulty, category) {
-        var source = collection[difficulty];
+    get(complexity, category) {
+        var source = collection[complexity];
         if (source === undefined) {
             source = collection[Math.max(...Object.keys(collection))];
         }
         source = source[category];
         var result = source;
         if (category !== 'filter') {
-            source = source[utils.random.number(0, source.length - 1)];
+            if (source.length > 1) {
+                source = source[utils.random.number(0, source.length - 1)];
+            } else {
+                source = source[0];
+            }
             result = {
                 bars: source.bars.map(samplePattern =>
                     Object.keys(samplePattern).map(i => Number(samplePattern[i]))
                 ),
-                merge: source.merge
+                merge: source.merge,
+                startPoint: source.startPoint
             }
         }
         return result;
@@ -179,31 +216,55 @@ class Collection {
 export default {
     collection: new Collection(),
     replace(source, newPattern) {
-        var startPoint = source.bars[0].length - newPattern.bars[0].length;
+        var startPoint = newPattern.startPoint !== undefined ?
+            newPattern.startPoint :
+            source.bars[0].length - newPattern.bars[0].length;
         var merge = Boolean(newPattern.merge);
-        source.bars.forEach((samplePattern, i) => {
-            if (newPattern.bars[i]) {
-                newPattern.bars[i].forEach((newBar, j) => {
+        newPattern.bars.forEach((newSamplePattern, i) => {
+            if (newSamplePattern) {
+                newSamplePattern.forEach((newBar, j) => {
                     if (!merge || newBar) {
-                        samplePattern[j + startPoint] = newBar;
+                        if (!source.bars[i]) {
+                            source.bars[i] = new Array(16).fill(0);
+                        }
+                        source.bars[i][j + startPoint] = newBar;
                     }
                 });
             }
         });
-        return source;
     },
     getPattern(params) {
         var pattern;
         var patternBreak;
         params = Object.assign({
             loopCount: 1,
-            difficulty: 0
+            complexity: 0
         }, params);
-        pattern = this.collection.get(params.difficulty, 'plain');
-        if (params.loopCount % 4 === 0) {
-            patternBreak = this.collection.get(params.difficulty, 'breaks');
-            pattern = this.replace(pattern, patternBreak);
+        if (params.complexity === 2) {
+            pattern = this.generate({
+                new: params.loopCount % 8 === 1
+            });
+        } else {
+            pattern = this.collection.get(params.complexity, 'plain');
+            if (params.loopCount % 4 === 0) {
+                patternBreak = this.collection.get(params.complexity, 'breaks');
+                this.replace(pattern, patternBreak);
+            }
+            if (params.loopCount % 8 === 1) {
+                this.replace(pattern, this.collection.get(params.complexity, 'crash'));
+            }
         }
         return pattern;
+    },
+    generate(params) {
+        var bars = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ];
+        return { bars };
     }
 };
