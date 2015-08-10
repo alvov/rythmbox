@@ -10,7 +10,7 @@ var VENDOR_MODULES = ['react', 'flux', 'events'];
 
 gulp.task('vendor', function() {
     var b = browserify();
-    b.require(require.resolve('babelify/polyfill'));
+    b.add(require.resolve('babelify/polyfill'));
     VENDOR_MODULES.forEach(function(id) {
         b.require(nodeResolve.sync(id), { expose: id });
     });
@@ -48,6 +48,6 @@ gulp.task('css', function() {
 gulp.task('build', ['js', 'css']);
 
 gulp.task('watch', ['js', 'css'], function() {
-    gulp.watch('./js/*/*.js', ['js']);
+    gulp.watch('./js/**/*.js', ['js']);
     gulp.watch('./css/*.styl', ['css']);
 });

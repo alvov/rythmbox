@@ -81,10 +81,12 @@ class Dataset {
 
 var utils = {
     random: {
-        number(min, max) {
-            min = undefined === min ? 0 : min;
-            max = undefined === max ? 1 : max;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        number(min = 0, max = 1) {
+            if (Array.isArray(min)) {
+                return min[this.number(0, min.length - 1)];
+            } else {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
         },
         color() {
             var color = [];

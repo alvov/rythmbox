@@ -2,7 +2,7 @@
 
 import AppDispatcher from '../dispatcher/app-dispatcher';
 import { EventEmitter } from 'events';
-import Rythmbox from '../lib/rythmbox';
+import Rythmbox from '../lib/rythmbox/rythmbox';
 
 var rythmbox = new Rythmbox({
     tempo: 160,

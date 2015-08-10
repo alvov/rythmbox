@@ -81,7 +81,7 @@ var _actionsActions = require('../actions/actions');
 
 var _actionsActions2 = _interopRequireDefault(_actionsActions);
 
-var DIFFICULTY_LEVELS = 2;
+var DIFFICULTY_LEVELS = 3;
 
 var Controls = _react2['default'].createClass({
     displayName: 'Controls',
@@ -193,7 +193,7 @@ var PatternComplexity = _react2['default'].createClass({
         );
     },
     setComplexity: function setComplexity(e) {
-        _actionsActions2['default'].setComplexity(e.target.value);
+        _actionsActions2['default'].setComplexity(Number(e.target.value));
     },
     onComplexityChange: function onComplexityChange(key) {
         if (key === 'patternComplexity') {
@@ -205,7 +205,7 @@ var PatternComplexity = _react2['default'].createClass({
 exports['default'] = Controls;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../stores/store":10,"react":"react"}],4:[function(require,module,exports){
+},{"../actions/actions":2,"../stores/store":11,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -343,7 +343,7 @@ var SamplesTimeline = _react2['default'].createClass({
 exports['default'] = SamplesTimeline;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../stores/store":10,"react":"react"}],5:[function(require,module,exports){
+},{"../actions/actions":2,"../stores/store":11,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -415,7 +415,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-var _utils = require('./utils');
+var _utils = require('../utils');
 
 var _utils2 = _interopRequireDefault(_utils);
 
@@ -508,8 +508,31 @@ var Collection = (function () {
     return Collection;
 })();
 
+exports['default'] = Collection;
+module.exports = exports['default'];
+
+},{"../utils":10}],8:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _rythmboxCollection = require('./rythmbox-collection');
+
+var _rythmboxCollection2 = _interopRequireDefault(_rythmboxCollection);
+
+var _utils = require('../utils');
+
+var _utils2 = _interopRequireDefault(_utils);
+
+var PATTERN_SIZE = 16;
+
 exports['default'] = {
-    collection: new Collection(),
+    basicGeneratedPattern: null,
+    collection: new _rythmboxCollection2['default'](),
     replace: function replace(source, newPattern) {
         var startPoint = newPattern.startPoint !== undefined ? newPattern.startPoint : source.bars[0].length - newPattern.bars[0].length;
         var merge = Boolean(newPattern.merge);
@@ -518,7 +541,7 @@ exports['default'] = {
                 newSamplePattern.forEach(function (newBar, j) {
                     if (!merge || newBar) {
                         if (!source.bars[i]) {
-                            source.bars[i] = new Array(16).fill(0);
+                            source.bars[i] = new Array(PATTERN_SIZE).fill(0);
                         }
                         source.bars[i][j + startPoint] = newBar;
                     }
@@ -543,20 +566,109 @@ exports['default'] = {
                 patternBreak = this.collection.get(params.complexity, 'breaks');
                 this.replace(pattern, patternBreak);
             }
-            if (params.loopCount % 8 === 1) {
-                this.replace(pattern, this.collection.get(params.complexity, 'crash'));
-            }
+        }
+        if (params.loopCount % 8 === 1) {
+            this.replace(pattern, this.collection.get(params.complexity, 'crash'));
         }
         return pattern;
     },
     generate: function generate(params) {
-        var bars = [[], [], [], [], [], []];
-        return { bars: bars };
+        var result = {
+            bars: []
+        };
+        for (var _i = 0; _i < 6; _i++) {
+            result.bars.push(new Array(PATTERN_SIZE).fill(0));
+        }
+        if (params['new'] || !this.basicGeneratedPattern) {
+            this.generateBasic();
+        }
+        // kick + snare
+        this.replace(result, this.basicGeneratedPattern);
+        result.bars[1].forEach(function (bar, i) {
+            if (i + 1 < PATTERN_SIZE && bar && _utils2['default'].random.number(0, 1)) {
+                result.bars[0][i + 1] = 1;
+            }
+        });
+        if (!_utils2['default'].random.number(0, 5)) {
+            result.bars[0][0] = 0;
+        }
+        if (result.bars[1][12]) {
+            var variant = _utils2['default'].random.number(0, 2);
+            switch (variant) {
+                case 0:
+                    if (!result.bars[0][9]) {
+                        result.bars[1][9] = 1;
+                    }
+                    break;
+                case 1:
+                    result.bars[1][13] = 1;
+            }
+        }
+        if (!result.bars[1][4] && _utils2['default'].random.number(0, 2)) {
+            result.bars[1][3] = 1;
+        }
+
+        // second snare
+        var secondSnare = [];
+        if (result.bars[1][12]) {
+            secondSnare.push(9);
+        }
+        for (var _i2 = 0; _i2 < 2; _i2++) {
+            secondSnare.push(_utils2['default'].random.number(0, 15));
+        }
+        secondSnare.forEach(function (bar) {
+            if (!result.bars[0][bar] && !result.bars[1][bar]) {
+                result.bars[2][bar] = 1;
+            }
+        });
+
+        // open hi-hat
+        var i = 2;
+        do {
+            result.bars[3][i] = 1;
+            i += _utils2['default'].random.number(2, 4);
+        } while (i < PATTERN_SIZE);
+
+        // tamb
+        result.bars[4][0] = 1;
+        i = 3;
+        do {
+            if (!result.bars[3][i]) {
+                result.bars[4][i] = 1;
+            }
+            i += _utils2['default'].random.number(2, 4);
+        } while (i < PATTERN_SIZE);
+
+        // closed hi-hat
+        for (i = 0; i < PATTERN_SIZE; i++) {
+            if (i % 2) {
+                var shift = _utils2['default'].random.number([-1, 0, 0, 0, 1]);
+                if (i + shift < PATTERN_SIZE) {
+                    result.bars[5][i + shift] = 1;
+                }
+            }
+        }
+
+        return result;
+    },
+    generateBasic: function generateBasic() {
+        var kick = new Array(PATTERN_SIZE).fill(0);
+        kick[0] = 1;
+        kick[_utils2['default'].random.number([2, 8, 9, 11, 14])] = 1;
+
+        var snare = new Array(PATTERN_SIZE).fill(0);
+        snare[_utils2['default'].random.number([4, 6])] = 1;
+        if (snare[4]) {
+            snare[_utils2['default'].random.number([10, 12])] = 1;
+        } else {
+            snare[12] = 1;
+        }
+        this.basicGeneratedPattern = { bars: [kick, snare], merge: true };
     }
 };
 module.exports = exports['default'];
 
-},{"./utils":9}],8:[function(require,module,exports){
+},{"../utils":10,"./rythmbox-collection":7}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -577,7 +689,7 @@ var _rythmboxBufferLoader = require('./rythmbox-buffer-loader');
 
 var _rythmboxBufferLoader2 = _interopRequireDefault(_rythmboxBufferLoader);
 
-var _utils = require('./utils');
+var _utils = require('../utils');
 
 var _utils2 = _interopRequireDefault(_utils);
 
@@ -704,7 +816,7 @@ var Rythmbox = (function () {
 exports['default'] = Rythmbox;
 module.exports = exports['default'];
 
-},{"./rythmbox-buffer-loader":6,"./rythmbox-pattern-generator":7,"./utils":9}],9:[function(require,module,exports){
+},{"../utils":10,"./rythmbox-buffer-loader":6,"./rythmbox-pattern-generator":8}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -832,10 +944,15 @@ var Dataset = (function () {
 
 var utils = {
     random: {
-        number: function number(min, max) {
-            min = undefined === min ? 0 : min;
-            max = undefined === max ? 1 : max;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
+        number: function number() {
+            var min = arguments.length <= 0 || arguments[0] === undefined ? 0 : arguments[0];
+            var max = arguments.length <= 1 || arguments[1] === undefined ? 1 : arguments[1];
+
+            if (Array.isArray(min)) {
+                return min[this.number(0, min.length - 1)];
+            } else {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
         },
         color: function color() {
             var color = [];
@@ -881,7 +998,7 @@ var utils = {
 exports['default'] = utils;
 module.exports = exports['default'];
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -896,11 +1013,11 @@ var _dispatcherAppDispatcher2 = _interopRequireDefault(_dispatcherAppDispatcher)
 
 var _events = require('events');
 
-var _libRythmbox = require('../lib/rythmbox');
+var _libRythmboxRythmbox = require('../lib/rythmbox/rythmbox');
 
-var _libRythmbox2 = _interopRequireDefault(_libRythmbox);
+var _libRythmboxRythmbox2 = _interopRequireDefault(_libRythmboxRythmbox);
 
-var rythmbox = new _libRythmbox2['default']({
+var rythmbox = new _libRythmboxRythmbox2['default']({
     tempo: 160,
     urls: ['/sounds/kick.ogg', '/sounds/snare_01.ogg', '/sounds/snare_02.ogg', '/sounds/hat_01.ogg', '/sounds/hat_02.ogg', '/sounds/hat_03.ogg', '/sounds/crash.ogg']
 });
@@ -958,4 +1075,4 @@ rythmbox.onChange(Store.emitChange.bind(Store));
 exports['default'] = Store;
 module.exports = exports['default'];
 
-},{"../dispatcher/app-dispatcher":5,"../lib/rythmbox":8,"events":"events"}]},{},[1]);
+},{"../dispatcher/app-dispatcher":5,"../lib/rythmbox/rythmbox":9,"events":"events"}]},{},[1]);

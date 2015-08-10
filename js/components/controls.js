@@ -4,7 +4,7 @@ import React from 'react';
 import Store from '../stores/store';
 import Actions from '../actions/actions';
 
-const DIFFICULTY_LEVELS = 2;
+const DIFFICULTY_LEVELS = 3;
 
 var Controls = React.createClass({
     render() {
@@ -94,7 +94,7 @@ var PatternComplexity = React.createClass({
         );
     },
     setComplexity(e) {
-        Actions.setComplexity(e.target.value);
+        Actions.setComplexity(Number(e.target.value));
     },
     onComplexityChange(key) {
         if (key === 'patternComplexity') {

@@ -1,6 +1,6 @@
 'use strict';
 
-import utils from './utils';
+import utils from '../utils';
 
 var collection = {
     0: {
@@ -187,7 +187,7 @@ var collection = {
     }
 };
 
-class Collection {
+export default class Collection {
     get(complexity, category) {
         var source = collection[complexity];
         if (source === undefined) {
@@ -212,59 +212,3 @@ class Collection {
         return result;
     }
 }
-
-export default {
-    collection: new Collection(),
-    replace(source, newPattern) {
-        var startPoint = newPattern.startPoint !== undefined ?
-            newPattern.startPoint :
-            source.bars[0].length - newPattern.bars[0].length;
-        var merge = Boolean(newPattern.merge);
-        newPattern.bars.forEach((newSamplePattern, i) => {
-            if (newSamplePattern) {
-                newSamplePattern.forEach((newBar, j) => {
-                    if (!merge || newBar) {
-                        if (!source.bars[i]) {
-                            source.bars[i] = new Array(16).fill(0);
-                        }
-                        source.bars[i][j + startPoint] = newBar;
-                    }
-                });
-            }
-        });
-    },
-    getPattern(params) {
-        var pattern;
-        var patternBreak;
-        params = Object.assign({
-            loopCount: 1,
-            complexity: 0
-        }, params);
-        if (params.complexity === 2) {
-            pattern = this.generate({
-                new: params.loopCount % 8 === 1
-            });
-        } else {
-            pattern = this.collection.get(params.complexity, 'plain');
-            if (params.loopCount % 4 === 0) {
-                patternBreak = this.collection.get(params.complexity, 'breaks');
-                this.replace(pattern, patternBreak);
-            }
-            if (params.loopCount % 8 === 1) {
-                this.replace(pattern, this.collection.get(params.complexity, 'crash'));
-            }
-        }
-        return pattern;
-    },
-    generate(params) {
-        var bars = [
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ];
-        return { bars };
-    }
-};

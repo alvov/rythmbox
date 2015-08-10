@@ -2,7 +2,7 @@
 
 import patternGenerator from './rythmbox-pattern-generator';
 import BufferLoader from './rythmbox-buffer-loader';
-import utils from './utils'
+import utils from '../utils';
 
 var state = Symbol('state');
 
