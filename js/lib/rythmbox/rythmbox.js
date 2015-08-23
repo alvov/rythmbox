@@ -26,14 +26,15 @@ export default class Rythmbox {
             loading: true,
             playing: false,
             patternComplexity: 0,
-            tempo: params.tempo
+            tempo: params.tempo,
+            error: null
         });
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioCtx = new AudioContext();
         }
         catch(e) {
-            alert('Web Audio API is not supported in this browser');
+            this.setState({ error: 'Web Audio API is not supported in this browser' });
         }
 
         this.currentPattern = this.getPattern();
@@ -45,7 +46,7 @@ export default class Rythmbox {
                 requestAnimationFrame(this.publish.bind(this));
             })
             .catch(err => {
-                console.error(err || 'Couldn\'t load sounds');
+                this.setState({ error: err || 'Couldn\'t load sounds' });
             });
     }
 

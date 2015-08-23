@@ -295,28 +295,33 @@ var LoadingScreen = _react2['default'].createClass({
     displayName: 'LoadingScreen',
 
     getInitialState: function getInitialState() {
-        return { loading: _storesStore2['default'].getState('loading') };
+        return {
+            loading: _storesStore2['default'].getState('loading'),
+            error: _storesStore2['default'].getState('error')
+        };
     },
     componentDidMount: function componentDidMount() {
-        _storesStore2['default'].addChangeListener(this.onLoadingStateChange);
+        _storesStore2['default'].addChangeListener(this.onStateChange);
     },
     componentWillUnmount: function componentWillUnmount() {
-        _storesStore2['default'].removeChangeListener(this.onLoadingStateChange);
+        _storesStore2['default'].removeChangeListener(this.onStateChange);
     },
     render: function render() {
         return _react2['default'].createElement(
             'div',
-            { className: 'loading-screen' + (this.state.loading ? ' is-loading' : '') },
+            { className: 'loading-screen' + (this.state.loading ? ' is-loading' : '') + (this.state.error ? ' is-error' : '') },
             _react2['default'].createElement(
                 'span',
                 null,
-                'Loading...'
+                this.state.error ? this.state.error : 'Loading...'
             )
         );
     },
-    onLoadingStateChange: function onLoadingStateChange(key) {
+    onStateChange: function onStateChange(key) {
         if (key === 'loading') {
             this.setState({ loading: _storesStore2['default'].getState('loading') });
+        } else if (key === 'error') {
+            this.setState({ error: _storesStore2['default'].getState('error') });
         }
     }
 });
@@ -528,11 +533,15 @@ var BufferLoader = (function () {
             var _this = this;
 
             return new Promise(function (resolve, reject) {
-                fetch(url).then(function (response) {
-                    response.arrayBuffer().then(function (buffer) {
-                        _this.context.decodeAudioData(buffer, resolve, reject);
-                    });
-                })['catch'](reject);
+                if (typeof fetch === 'undefined') {
+                    reject('Fetch API is not supported in this browser');
+                } else {
+                    fetch(url).then(function (response) {
+                        response.arrayBuffer().then(function (buffer) {
+                            _this.context.decodeAudioData(buffer, resolve, reject);
+                        });
+                    })['catch'](reject);
+                }
             });
         }
     }, {
@@ -898,13 +907,14 @@ var Rythmbox = (function () {
             loading: true,
             playing: false,
             patternComplexity: 0,
-            tempo: params.tempo
+            tempo: params.tempo,
+            error: null
         });
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
             this.audioCtx = new AudioContext();
         } catch (e) {
-            alert('Web Audio API is not supported in this browser');
+            this.setState({ error: 'Web Audio API is not supported in this browser' });
         }
 
         this.currentPattern = this.getPattern();
@@ -913,7 +923,7 @@ var Rythmbox = (function () {
             _this.setState({ loading: false });
             requestAnimationFrame(_this.publish.bind(_this));
         })['catch'](function (err) {
-            console.error(err || 'Couldn\'t load sounds');
+            _this.setState({ error: err || 'Couldn\'t load sounds' });
         });
     }
 

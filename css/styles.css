@@ -25,6 +25,9 @@ body {
 .loading-screen.is-loading {
   display: block;
 }
+.loading-screen.is-error {
+  color: #e00;
+}
 .loading-screen:before {
   content: '';
   position: relative;

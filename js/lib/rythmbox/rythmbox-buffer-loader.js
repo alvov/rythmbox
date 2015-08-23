@@ -8,14 +8,18 @@ export default class BufferLoader {
 
     loadSample(url) {
         return new Promise((resolve, reject) => {
-            fetch(url)
-                .then(response => {
-                    response.arrayBuffer().then(buffer => {
-                        this.context.decodeAudioData(buffer, resolve, reject)
-                    });
-                })
-                .catch(reject)
-            ;
+            if (typeof fetch === 'undefined') {
+                reject('Fetch API is not supported in this browser');
+            } else {
+                fetch(url)
+                    .then(response => {
+                        response.arrayBuffer().then(buffer => {
+                            this.context.decodeAudioData(buffer, resolve, reject)
+                        });
+                    })
+                    .catch(reject)
+                ;
+            }
         });
     }
 
