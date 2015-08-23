@@ -6,28 +6,14 @@ import Actions from '../actions/actions';
 import constants from '../constants/constants';
 
 var Controls = React.createClass({
-    getInitialState() {
-        return { loading: Store.getState('loading') };
-    },
-    componentDidMount() {
-        Store.addChangeListener(this.onLoadingStateChange);
-    },
-    componentWillUnmount() {
-        Store.removeChangeListener(this.onLoadingStateChange);
-    },
     render() {
         return (
-            <div className={'controls' + (this.state.loading ? ' loading' : '')}>
+            <div className="controls">
                 <PlayButton />
                 <Tempo />
                 <PatternComplexity />
             </div>
         );
-    },
-    onLoadingStateChange(key) {
-        if (key === 'loading') {
-            this.setState({ loading: Store.getState('loading') });
-        }
     }
 });
 

@@ -12,21 +12,34 @@ body {
   clear: left;
   font-size: 0;
 }
+.loading-screen {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255,255,255,0.9);
+  text-align: center;
+}
+.loading-screen.is-loading {
+  display: block;
+}
+.loading-screen:before {
+  content: '';
+  position: relative;
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+.loading-screen span {
+  display: inline-block;
+  vertical-align: middle;
+}
 .controls {
   position: relative;
   margin: 0 0 1rem;
   font-size: 14px;
-}
-.controls.loading::after {
-  content: 'Loading...';
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: rgba(255,255,255,0.9);
-  text-align: center;
-  line-height: 2rem;
 }
 .controls .control {
   display: inline-block;
@@ -70,7 +83,6 @@ body {
   clear: left;
   margin: 0 0 0 -5.25rem;
   padding: 0.3rem 0;
-  z-index: 20;
 }
 .box .line .bar {
   display: inline-block;
@@ -107,5 +119,4 @@ body {
   width: calc(100% / 16);
   height: 100%;
   background-color: rgba(255,218,120,0.67);
-  z-index: 10;
 }

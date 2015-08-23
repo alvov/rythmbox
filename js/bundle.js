@@ -7,19 +7,13 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _componentsSamplesTimeline = require('./components/samples-timeline');
+var _componentsApp = require('./components/app');
 
-var _componentsSamplesTimeline2 = _interopRequireDefault(_componentsSamplesTimeline);
+var _componentsApp2 = _interopRequireDefault(_componentsApp);
 
-var _componentsControls = require('./components/controls');
+_react2['default'].render(_react2['default'].createElement(_componentsApp2['default'], null), document.getElementById('app'));
 
-var _componentsControls2 = _interopRequireDefault(_componentsControls);
-
-_react2['default'].render(_react2['default'].createElement(_componentsSamplesTimeline2['default'], null), document.getElementById('visuals'));
-
-_react2['default'].render(_react2['default'].createElement(_componentsControls2['default'], null), document.getElementById('controls'));
-
-},{"./components/controls":3,"./components/samples-timeline":4,"react":"react"}],2:[function(require,module,exports){
+},{"./components/app":3,"react":"react"}],2:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -62,7 +56,49 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"../constants/constants":5,"../dispatcher/app-dispatcher":6}],3:[function(require,module,exports){
+},{"../constants/constants":7,"../dispatcher/app-dispatcher":8}],3:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _controls = require('./controls');
+
+var _controls2 = _interopRequireDefault(_controls);
+
+var _samplesTimeline = require('./samples-timeline');
+
+var _samplesTimeline2 = _interopRequireDefault(_samplesTimeline);
+
+var _loadingScreen = require('./loading-screen');
+
+var _loadingScreen2 = _interopRequireDefault(_loadingScreen);
+
+var RythmboxApp = _react2['default'].createClass({
+    displayName: 'RythmboxApp',
+
+    render: function render() {
+        return _react2['default'].createElement(
+            'div',
+            null,
+            _react2['default'].createElement(_controls2['default'], null),
+            _react2['default'].createElement(_samplesTimeline2['default'], null),
+            _react2['default'].createElement(_loadingScreen2['default'], null)
+        );
+    }
+});
+
+exports['default'] = RythmboxApp;
+module.exports = exports['default'];
+
+},{"./controls":4,"./loading-screen":5,"./samples-timeline":6,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -90,28 +126,14 @@ var _constantsConstants2 = _interopRequireDefault(_constantsConstants);
 var Controls = _react2['default'].createClass({
     displayName: 'Controls',
 
-    getInitialState: function getInitialState() {
-        return { loading: _storesStore2['default'].getState('loading') };
-    },
-    componentDidMount: function componentDidMount() {
-        _storesStore2['default'].addChangeListener(this.onLoadingStateChange);
-    },
-    componentWillUnmount: function componentWillUnmount() {
-        _storesStore2['default'].removeChangeListener(this.onLoadingStateChange);
-    },
     render: function render() {
         return _react2['default'].createElement(
             'div',
-            { className: 'controls' + (this.state.loading ? ' loading' : '') },
+            { className: 'controls' },
             _react2['default'].createElement(PlayButton, null),
             _react2['default'].createElement(Tempo, null),
             _react2['default'].createElement(PatternComplexity, null)
         );
-    },
-    onLoadingStateChange: function onLoadingStateChange(key) {
-        if (key === 'loading') {
-            this.setState({ loading: _storesStore2['default'].getState('loading') });
-        }
     }
 });
 
@@ -252,7 +274,57 @@ var PatternComplexity = _react2['default'].createClass({
 exports['default'] = Controls;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../constants/constants":5,"../stores/store":13,"react":"react"}],4:[function(require,module,exports){
+},{"../actions/actions":2,"../constants/constants":7,"../stores/store":15,"react":"react"}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _storesStore = require('../stores/store');
+
+var _storesStore2 = _interopRequireDefault(_storesStore);
+
+var LoadingScreen = _react2['default'].createClass({
+    displayName: 'LoadingScreen',
+
+    getInitialState: function getInitialState() {
+        return { loading: _storesStore2['default'].getState('loading') };
+    },
+    componentDidMount: function componentDidMount() {
+        _storesStore2['default'].addChangeListener(this.onLoadingStateChange);
+    },
+    componentWillUnmount: function componentWillUnmount() {
+        _storesStore2['default'].removeChangeListener(this.onLoadingStateChange);
+    },
+    render: function render() {
+        return _react2['default'].createElement(
+            'div',
+            { className: 'loading-screen' + (this.state.loading ? ' is-loading' : '') },
+            _react2['default'].createElement(
+                'span',
+                null,
+                'Loading...'
+            )
+        );
+    },
+    onLoadingStateChange: function onLoadingStateChange(key) {
+        if (key === 'loading') {
+            this.setState({ loading: _storesStore2['default'].getState('loading') });
+        }
+    }
+});
+
+exports['default'] = LoadingScreen;
+module.exports = exports['default'];
+
+},{"../stores/store":15,"react":"react"}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -396,7 +468,7 @@ var SamplesTimeline = _react2['default'].createClass({
 exports['default'] = SamplesTimeline;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../constants/constants":5,"../stores/store":13,"react":"react"}],5:[function(require,module,exports){
+},{"../actions/actions":2,"../constants/constants":7,"../stores/store":15,"react":"react"}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -419,7 +491,7 @@ exports['default'] = Object.assign({
 }, _libRythmboxRythmboxConstants2['default']);
 module.exports = exports['default'];
 
-},{"../lib/rythmbox/rythmbox-constants":9}],6:[function(require,module,exports){
+},{"../lib/rythmbox/rythmbox-constants":11}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -431,7 +503,7 @@ var _flux = require('flux');
 exports['default'] = new _flux.Dispatcher();
 module.exports = exports['default'];
 
-},{"flux":"flux"}],7:[function(require,module,exports){
+},{"flux":"flux"}],9:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -476,7 +548,7 @@ var BufferLoader = (function () {
 exports['default'] = BufferLoader;
 module.exports = exports['default'];
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -587,7 +659,7 @@ var Collection = (function () {
 exports['default'] = Collection;
 module.exports = exports['default'];
 
-},{"../utils":12}],9:[function(require,module,exports){
+},{"../utils":14}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -606,7 +678,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -772,7 +844,7 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"../utils":12,"./rythmbox-collection":8,"./rythmbox-constants":9}],11:[function(require,module,exports){
+},{"../utils":14,"./rythmbox-collection":10,"./rythmbox-constants":11}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -969,7 +1041,7 @@ var Rythmbox = (function () {
 exports['default'] = Rythmbox;
 module.exports = exports['default'];
 
-},{"../utils":12,"./rythmbox-buffer-loader":7,"./rythmbox-constants":9,"./rythmbox-pattern-generator":10}],12:[function(require,module,exports){
+},{"../utils":14,"./rythmbox-buffer-loader":9,"./rythmbox-constants":11,"./rythmbox-pattern-generator":12}],14:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1151,7 +1223,7 @@ var utils = {
 exports['default'] = utils;
 module.exports = exports['default'];
 
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1235,4 +1307,4 @@ rythmbox.onChange(Store.emitChange.bind(Store));
 exports['default'] = Store;
 module.exports = exports['default'];
 
-},{"../constants/constants":5,"../dispatcher/app-dispatcher":6,"../lib/rythmbox/rythmbox":11,"events":"events"}]},{},[1]);
+},{"../constants/constants":7,"../dispatcher/app-dispatcher":8,"../lib/rythmbox/rythmbox":13,"events":"events"}]},{},[1]);
