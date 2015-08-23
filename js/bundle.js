@@ -114,6 +114,45 @@ var Controls = _react2['default'].createClass({
         }
     }
 });
+
+var RangeControl = _react2['default'].createClass({
+    displayName: 'RangeControl',
+
+    propTypes: {
+        name: _react2['default'].PropTypes.string.isRequired,
+        min: _react2['default'].PropTypes.number,
+        max: _react2['default'].PropTypes.number,
+        value: _react2['default'].PropTypes.number,
+        onchange: _react2['default'].PropTypes.func.isRequired,
+        postfix: _react2['default'].PropTypes.string
+    },
+    getDefaultProps: function getDefaultProps() {
+        return {
+            min: 0,
+            max: 100,
+            value: 0,
+            postfix: ''
+        };
+    },
+    render: function render() {
+        return _react2['default'].createElement(
+            'div',
+            { className: 'control' },
+            _react2['default'].createElement(
+                'label',
+                { className: 'control__label' },
+                this.props.name
+            ),
+            _react2['default'].createElement('input', { className: 'control__input', type: 'range', min: this.props.min, max: this.props.max, value: this.props.value, onChange: this.props.onchange }),
+            _react2['default'].createElement(
+                'span',
+                { className: 'control__postfix' },
+                this.props.postfix
+            )
+        );
+    }
+});
+
 var PlayButton = _react2['default'].createClass({
     displayName: 'PlayButton',
 
@@ -155,21 +194,13 @@ var Tempo = _react2['default'].createClass({
         _storesStore2['default'].removeChangeListener(this.onTempoChange);
     },
     render: function render() {
-        return _react2['default'].createElement(
-            'div',
-            { className: 'tempo' },
-            _react2['default'].createElement(
-                'label',
-                null,
-                'Tempo'
-            ),
-            _react2['default'].createElement('input', { className: 'tempo__input', type: 'range', min: '120', max: '170', value: this.state.tempo, onChange: this.setTempo }),
-            _react2['default'].createElement(
-                'span',
-                { className: 'tempo__count' },
-                this.state.tempo
-            )
-        );
+        return _react2['default'].createElement(RangeControl, {
+            name: 'Tempo',
+            min: 120,
+            max: 170,
+            value: this.state.tempo,
+            onchange: this.setTempo,
+            postfix: String(this.state.tempo) });
     },
     setTempo: function setTempo(e) {
         _actionsActions2['default'].setTempo(Number(e.target.value));
@@ -184,7 +215,7 @@ var PatternComplexity = _react2['default'].createClass({
     displayName: 'PatternComplexity',
 
     getInitialState: function getInitialState() {
-        return { complexity: _storesStore2['default'].getState('patternComplexity') };
+        return this.getCurrentComplexity();
     },
     componentDidMount: function componentDidMount() {
         _storesStore2['default'].addChangeListener(this.onComplexityChange);
@@ -193,30 +224,28 @@ var PatternComplexity = _react2['default'].createClass({
         _storesStore2['default'].removeChangeListener(this.onComplexityChange);
     },
     render: function render() {
-        var inputs = [];
-        for (var i = 0; i < _constantsConstants2['default'].COMPLEXITY_LEVELS; i++) {
-            inputs.push(_react2['default'].createElement('input', { type: 'radio', name: 'complexity',
-                key: i, id: 'complexity' + i, value: i, onChange: this.setComplexity,
-                checked: Number(this.state.complexity) === i }));
-        }
-        return _react2['default'].createElement(
-            'div',
-            { className: 'complexity' },
-            _react2['default'].createElement(
-                'label',
-                null,
-                'Complexity'
-            ),
-            inputs
-        );
+        return _react2['default'].createElement(RangeControl, {
+            name: 'Complexity',
+            min: 0,
+            max: _constantsConstants2['default'].COMPLEXITY_LEVELS - 1,
+            value: this.state.complexity,
+            onchange: this.setComplexity,
+            postfix: this.state.complexityName });
     },
     setComplexity: function setComplexity(e) {
         _actionsActions2['default'].setComplexity(Number(e.target.value));
     },
     onComplexityChange: function onComplexityChange(key) {
         if (key === 'patternComplexity') {
-            this.setState({ complexity: _storesStore2['default'].getState('patternComplexity') });
+            this.setState(this.getCurrentComplexity());
         }
+    },
+    getCurrentComplexity: function getCurrentComplexity() {
+        var result = {
+            complexity: _storesStore2['default'].getState('patternComplexity')
+        };
+        result.complexityName = _constantsConstants2['default'].COMPLEXITY_NAME[result.complexity];
+        return result;
     }
 });
 
@@ -251,6 +280,9 @@ var _constantsConstants2 = _interopRequireDefault(_constantsConstants);
 var SampleBar = _react2['default'].createClass({
     displayName: 'SampleBar',
 
+    propTypes: {
+        className: _react2['default'].PropTypes.string
+    },
     render: function render() {
         var className = 'bar ' + this.props.className;
         return _react2['default'].createElement('div', { className: className });
@@ -259,6 +291,9 @@ var SampleBar = _react2['default'].createClass({
 var TimelineToggle = _react2['default'].createClass({
     displayName: 'TimelineToggle',
 
+    propTypes: {
+        onclick: _react2['default'].PropTypes.func
+    },
     render: function render() {
         return _react2['default'].createElement(
             'button',
@@ -271,7 +306,8 @@ var SampleTimeline = _react2['default'].createClass({
     displayName: 'SampleTimeline',
 
     propTypes: {
-        samplePattern: _react2['default'].PropTypes.arrayOf(_react2['default'].PropTypes.number).isRequired
+        samplePattern: _react2['default'].PropTypes.arrayOf(_react2['default'].PropTypes.number).isRequired,
+        id: _react2['default'].PropTypes.number.isRequired
     },
     getInitialState: function getInitialState() {
         return {
@@ -283,9 +319,9 @@ var SampleTimeline = _react2['default'].createClass({
         this.setState({ name: _storesStore2['default'].getBufferName(this.props.id) });
     },
     render: function render() {
-        var bars = this.props.samplePattern.map(function (play) {
+        var bars = this.props.samplePattern.map(function (play, i) {
             var barClass = play ? 'fill' : 'empty';
-            return _react2['default'].createElement(SampleBar, { className: barClass });
+            return _react2['default'].createElement(SampleBar, { className: barClass, key: i });
         });
         return _react2['default'].createElement(
             'div',
@@ -341,7 +377,7 @@ var SamplesTimeline = _react2['default'].createClass({
     },
     render: function render() {
         var samplesLines = this.state.pattern.bars.map(function (samplePattern, i) {
-            return _react2['default'].createElement(SampleTimeline, { id: i, samplePattern: samplePattern });
+            return _react2['default'].createElement(SampleTimeline, { id: i, key: i, samplePattern: samplePattern });
         });
         return _react2['default'].createElement(
             'div',
@@ -561,7 +597,12 @@ exports['default'] = {
     BARS: 16,
     SCHEDULE_INTERVAL: 40,
     SCHEDULE_AHEAD_TIME: 0.1,
-    COMPLEXITY_LEVELS: 3
+    COMPLEXITY_LEVELS: 3,
+    COMPLEXITY_NAME: {
+        0: 'simple',
+        1: 'breakbeat',
+        2: 'random'
+    }
 };
 module.exports = exports['default'];
 

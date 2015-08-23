@@ -28,25 +28,19 @@ body {
   text-align: center;
   line-height: 2rem;
 }
-.controls .tempo {
+.controls .control {
   display: inline-block;
   margin: 0 2rem 0 0;
 }
-.controls .tempo label {
+.controls .control__label {
   display: block;
 }
-.controls .tempo__input {
+.controls .control__input {
   margin: 0 0.3rem 0 0;
   vertical-align: middle;
 }
-.controls .tempo__count {
+.controls .control__postfix {
   vertical-align: middle;
-}
-.controls .complexity {
-  display: inline-block;
-}
-.controls .complexity label {
-  display: block;
 }
 .controls .play-button {
   width: 5rem;

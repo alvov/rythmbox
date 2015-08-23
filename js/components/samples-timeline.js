@@ -6,19 +6,26 @@ import Actions from '../actions/actions';
 import constants from '../constants/constants';
 
 var SampleBar = React.createClass({
+    propTypes: {
+        className: React.PropTypes.string
+    },
     render() {
         var className = `bar ${this.props.className}`;
         return <div className={className} />;
     }
 });
 var TimelineToggle = React.createClass({
+    propTypes: {
+        onclick: React.PropTypes.func
+    },
     render() {
         return <button className="toggle" onClick={this.props.onclick}>{this.props.children}</button>
     }
 });
 var SampleTimeline = React.createClass({
     propTypes: {
-        samplePattern: React.PropTypes.arrayOf(React.PropTypes.number).isRequired
+        samplePattern: React.PropTypes.arrayOf(React.PropTypes.number).isRequired,
+        id: React.PropTypes.number.isRequired
     },
     getInitialState() {
         return {
@@ -30,9 +37,9 @@ var SampleTimeline = React.createClass({
         this.setState({ name: Store.getBufferName(this.props.id) });
     },
     render() {
-        var bars = this.props.samplePattern.map(play => {
+        var bars = this.props.samplePattern.map((play, i) => {
             let barClass = play ? 'fill' : 'empty';
-            return <SampleBar className={barClass} />;
+            return <SampleBar className={barClass} key={i} />;
         });
         return (
             <div className={'line' + (this.state.muted ? ' muted' : '')}>
@@ -80,7 +87,7 @@ var SamplesTimeline = React.createClass({
     },
     render() {
         var samplesLines = this.state.pattern.bars.map(
-            (samplePattern, i) => <SampleTimeline id={i} samplePattern={samplePattern}/>
+            (samplePattern, i) => <SampleTimeline id={i} key={i} samplePattern={samplePattern}/>
         );
         return (
             <div className="box clearfix">

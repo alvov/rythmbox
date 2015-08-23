@@ -30,6 +30,35 @@ var Controls = React.createClass({
         }
     }
 });
+
+var RangeControl = React.createClass({
+    propTypes: {
+        name: React.PropTypes.string.isRequired,
+        min: React.PropTypes.number,
+        max: React.PropTypes.number,
+        value: React.PropTypes.number,
+        onchange: React.PropTypes.func.isRequired,
+        postfix: React.PropTypes.string
+    },
+    getDefaultProps() {
+        return {
+            min: 0,
+            max: 100,
+            value: 0,
+            postfix: ''
+        };
+    },
+    render() {
+        return (
+            <div className="control">
+                <label className="control__label">{this.props.name}</label>
+                <input className="control__input" type="range" min={this.props.min} max={this.props.max} value={this.props.value} onChange={this.props.onchange} />
+                <span className="control__postfix">{this.props.postfix}</span>
+            </div>
+        );
+    }
+});
+
 var PlayButton = React.createClass({
     getInitialState() {
         return { playing: Store.getState('playing') };
@@ -63,13 +92,13 @@ var Tempo = React.createClass({
         Store.removeChangeListener(this.onTempoChange);
     },
     render() {
-        return (
-            <div className="tempo">
-                <label>Tempo</label>
-                <input className="tempo__input" type="range" min="120" max="170" value={this.state.tempo} onChange={this.setTempo} />
-                <span className="tempo__count">{this.state.tempo}</span>
-            </div>
-        );
+        return <RangeControl
+            name="Tempo"
+            min={120}
+            max={170}
+            value={this.state.tempo}
+            onchange={this.setTempo}
+            postfix={String(this.state.tempo)} />;
     },
     setTempo(e) {
         Actions.setTempo(Number(e.target.value));
@@ -82,7 +111,7 @@ var Tempo = React.createClass({
 });
 var PatternComplexity = React.createClass({
     getInitialState() {
-        return { complexity: Store.getState('patternComplexity') };
+        return this.getCurrentComplexity();
     },
     componentDidMount() {
         Store.addChangeListener(this.onComplexityChange);
@@ -91,28 +120,28 @@ var PatternComplexity = React.createClass({
         Store.removeChangeListener(this.onComplexityChange);
     },
     render() {
-        var inputs = [];
-        for (let i = 0; i < constants.COMPLEXITY_LEVELS; i++) {
-            inputs.push(
-                <input type="radio" name="complexity"
-                    key={i} id={'complexity' + i} value={i} onChange={this.setComplexity}
-                    checked={Number(this.state.complexity) === i} />
-            );
-        }
-        return (
-            <div className="complexity">
-                <label>Complexity</label>
-                {inputs}
-            </div>
-        );
+        return <RangeControl
+            name="Complexity"
+            min={0}
+            max={constants.COMPLEXITY_LEVELS - 1}
+            value={this.state.complexity}
+            onchange={this.setComplexity}
+            postfix={this.state.complexityName} />;
     },
     setComplexity(e) {
         Actions.setComplexity(Number(e.target.value));
     },
     onComplexityChange(key) {
         if (key === 'patternComplexity') {
-            this.setState({ complexity: Store.getState('patternComplexity') });
+            this.setState(this.getCurrentComplexity());
         }
+    },
+    getCurrentComplexity() {
+        var result = {
+            complexity: Store.getState('patternComplexity')
+        };
+        result.complexityName = constants.COMPLEXITY_NAME[result.complexity];
+        return result;
     }
 });
 
