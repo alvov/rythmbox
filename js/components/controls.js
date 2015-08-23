@@ -3,23 +3,36 @@
 import React from 'react';
 import Store from '../stores/store';
 import Actions from '../actions/actions';
-
-const DIFFICULTY_LEVELS = 3;
+import constants from '../constants/constants';
 
 var Controls = React.createClass({
+    getInitialState() {
+        return { loading: Store.getState('loading') };
+    },
+    componentDidMount() {
+        Store.addChangeListener(this.onLoadingStateChange);
+    },
+    componentWillUnmount() {
+        Store.removeChangeListener(this.onLoadingStateChange);
+    },
     render() {
         return (
-            <div className="controls">
+            <div className={'controls' + (this.state.loading ? ' loading' : '')}>
                 <PlayButton />
                 <Tempo />
                 <PatternComplexity />
             </div>
         );
+    },
+    onLoadingStateChange(key) {
+        if (key === 'loading') {
+            this.setState({ loading: Store.getState('loading') });
+        }
     }
 });
 var PlayButton = React.createClass({
     getInitialState() {
-        return { playing: Store.getState().playing };
+        return { playing: Store.getState('playing') };
     },
     componentDidMount() {
         Store.addChangeListener(this.onPlayStateChange);
@@ -35,13 +48,13 @@ var PlayButton = React.createClass({
     },
     onPlayStateChange(key) {
         if (key === 'playing') {
-            this.setState({playing: Store.getState().playing});
+            this.setState({ playing: Store.getState('playing') });
         }
     }
 });
 var Tempo = React.createClass({
     getInitialState() {
-        return { tempo: Store.getState().tempo };
+        return { tempo: Store.getState('tempo') };
     },
     componentDidMount() {
         Store.addChangeListener(this.onTempoChange);
@@ -63,13 +76,13 @@ var Tempo = React.createClass({
     },
     onTempoChange(key) {
         if (key === 'tempo') {
-            this.setState({ tempo: Store.getState().tempo });
+            this.setState({ tempo: Store.getState('tempo') });
         }
     }
 });
 var PatternComplexity = React.createClass({
     getInitialState() {
-        return { complexity: Store.getState().patternComplexity };
+        return { complexity: Store.getState('patternComplexity') };
     },
     componentDidMount() {
         Store.addChangeListener(this.onComplexityChange);
@@ -79,7 +92,7 @@ var PatternComplexity = React.createClass({
     },
     render() {
         var inputs = [];
-        for (let i = 0; i < DIFFICULTY_LEVELS; i++) {
+        for (let i = 0; i < constants.COMPLEXITY_LEVELS; i++) {
             inputs.push(
                 <input type="radio" name="complexity"
                     key={i} id={'complexity' + i} value={i} onChange={this.setComplexity}
@@ -98,7 +111,7 @@ var PatternComplexity = React.createClass({
     },
     onComplexityChange(key) {
         if (key === 'patternComplexity') {
-            this.setState({ complexity: Store.getState().patternComplexity });
+            this.setState({ complexity: Store.getState('patternComplexity') });
         }
     }
 });

@@ -3,6 +3,7 @@
 import AppDispatcher from '../dispatcher/app-dispatcher';
 import { EventEmitter } from 'events';
 import Rythmbox from '../lib/rythmbox/rythmbox';
+import { actionTypes } from '../constants/constants';
 
 var rythmbox = new Rythmbox({
     tempo: 160,
@@ -18,8 +19,12 @@ var rythmbox = new Rythmbox({
 });
 
 var Store = Object.assign({}, EventEmitter.prototype, {
-    getState() {
-        return rythmbox.getState();
+    getState(key) {
+        if (rythmbox[key] !== undefined) {
+            return rythmbox[key];
+        } else {
+            return rythmbox.getState()[key];
+        }
     },
     getBufferName(id) {
         var url = rythmbox.urls[id];
@@ -31,20 +36,20 @@ var Store = Object.assign({}, EventEmitter.prototype, {
     removeChangeListener(callback) {
         this.removeListener('change', callback);
     },
-    emitChange(key) {
-        this.emit('change', key);
+    emitChange() {
+        this.emit('change', ...arguments);
     },
     dispatcherIndex: AppDispatcher.register(action => {
         switch(action.actionType) {
-            case 'setTempo':
+            case actionTypes.SET_TEMPO:
                 rythmbox.setState({ tempo: action.tempo });
                 break;
 
-            case 'setComplexity':
+            case actionTypes.SET_COMPLEXITY:
                 rythmbox.setState({ patternComplexity: action.complexity });
                 break;
 
-            case 'togglePlay':
+            case actionTypes.TOGGLE_PLAY:
                 if (action.on) {
                     rythmbox.play();
                 } else {
@@ -52,7 +57,7 @@ var Store = Object.assign({}, EventEmitter.prototype, {
                 }
                 break;
 
-            case 'toggleBuffer':
+            case actionTypes.TOGGLE_BUFFER:
                 if (rythmbox.muted[action.id]) {
                     delete rythmbox.muted[action.id];
                 } else {

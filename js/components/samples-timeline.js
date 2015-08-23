@@ -3,6 +3,7 @@
 import React from 'react';
 import Store from '../stores/store';
 import Actions from '../actions/actions';
+import constants from '../constants/constants';
 
 var SampleBar = React.createClass({
     render() {
@@ -49,34 +50,33 @@ var TimelineCursor = React.createClass({
     getInitialState() {
         return { cursorPos: 0 }
     },
+    componentDidMount() {
+        Store.addChangeListener(this.onBarChange);
+    },
+    componentWillUnmount() {
+        Store.removeChangeListener(this.onBarChange);
+    },
     render() {
         return <div className="cursor" style={{left: this.state.cursorPos + '%'}} />;
     },
-    interval: null,
-    reset(tempo) {
-        var i = 0;
-        clearInterval(this.interval);
-        this.interval = setInterval(() => {
-            i++;
-            this.setState({ cursorPos: i * 100 / 16 });
-            if (i === 16) {
-                clearInterval(this.interval);
-                this.interval = null;
-                this.setState({ cursorPos: 0 });
-            }
-        }, 1000 * 15 / tempo);
-        this.setState({ cursorPos: 0 });
+    getPosition(bar) {
+        return bar * 100 / constants.BARS;
+    },
+    onBarChange(key, bar) {
+        if (key === 'bar') {
+            this.setState({ cursorPos: this.getPosition(bar) });
+        }
     }
 });
 var SamplesTimeline = React.createClass({
     getInitialState() {
-        return { pattern: Store.getState().currentPattern };
+        return { pattern: Store.getState('currentPattern') };
     },
     componentDidMount() {
-        Store.addChangeListener(this.onStateChange);
+        Store.addChangeListener(this.onPatternChange);
     },
     componentWillUnmount() {
-        Store.removeChangeListener(this.onStateChange);
+        Store.removeChangeListener(this.onPatternChange);
     },
     render() {
         var samplesLines = this.state.pattern.bars.map(
@@ -84,16 +84,14 @@ var SamplesTimeline = React.createClass({
         );
         return (
             <div className="box clearfix">
-                <TimelineCursor ref="cursor" />
+                <TimelineCursor />
                 {samplesLines}
             </div>
         );
     },
-    onStateChange(key) {
-        if (key === 'currentPattern') {
-            let rythmBoxState = Store.getState();
-            this.setState({ pattern: rythmBoxState.currentPattern });
-            this.refs.cursor.reset(rythmBoxState.tempo);
+    onPatternChange(key) {
+        if (key === 'pattern') {
+            this.setState({ pattern: Store.getState('currentPattern') });
         }
     }
 });

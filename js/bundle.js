@@ -32,35 +32,37 @@ var _dispatcherAppDispatcher = require('../dispatcher/app-dispatcher');
 
 var _dispatcherAppDispatcher2 = _interopRequireDefault(_dispatcherAppDispatcher);
 
+var _constantsConstants = require('../constants/constants');
+
 exports['default'] = {
     togglePlay: function togglePlay(on) {
         _dispatcherAppDispatcher2['default'].dispatch({
-            actionType: 'togglePlay',
+            actionType: _constantsConstants.actionTypes.TOGGLE_PLAY,
             on: on
         });
     },
     toggleBuffer: function toggleBuffer(id) {
         _dispatcherAppDispatcher2['default'].dispatch({
-            actionType: 'toggleBuffer',
+            actionType: _constantsConstants.actionTypes.TOGGLE_BUFFER,
             id: id
         });
     },
     setTempo: function setTempo(tempo) {
         _dispatcherAppDispatcher2['default'].dispatch({
-            actionType: 'setTempo',
+            actionType: _constantsConstants.actionTypes.SET_TEMPO,
             tempo: tempo
         });
     },
     setComplexity: function setComplexity(complexity) {
         _dispatcherAppDispatcher2['default'].dispatch({
-            actionType: 'setComplexity',
+            actionType: _constantsConstants.actionTypes.SET_COMPLEXITY,
             complexity: complexity
         });
     }
 };
 module.exports = exports['default'];
 
-},{"../dispatcher/app-dispatcher":5}],3:[function(require,module,exports){
+},{"../constants/constants":5,"../dispatcher/app-dispatcher":6}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -81,26 +83,42 @@ var _actionsActions = require('../actions/actions');
 
 var _actionsActions2 = _interopRequireDefault(_actionsActions);
 
-var DIFFICULTY_LEVELS = 3;
+var _constantsConstants = require('../constants/constants');
+
+var _constantsConstants2 = _interopRequireDefault(_constantsConstants);
 
 var Controls = _react2['default'].createClass({
     displayName: 'Controls',
 
+    getInitialState: function getInitialState() {
+        return { loading: _storesStore2['default'].getState('loading') };
+    },
+    componentDidMount: function componentDidMount() {
+        _storesStore2['default'].addChangeListener(this.onLoadingStateChange);
+    },
+    componentWillUnmount: function componentWillUnmount() {
+        _storesStore2['default'].removeChangeListener(this.onLoadingStateChange);
+    },
     render: function render() {
         return _react2['default'].createElement(
             'div',
-            { className: 'controls' },
+            { className: 'controls' + (this.state.loading ? ' loading' : '') },
             _react2['default'].createElement(PlayButton, null),
             _react2['default'].createElement(Tempo, null),
             _react2['default'].createElement(PatternComplexity, null)
         );
+    },
+    onLoadingStateChange: function onLoadingStateChange(key) {
+        if (key === 'loading') {
+            this.setState({ loading: _storesStore2['default'].getState('loading') });
+        }
     }
 });
 var PlayButton = _react2['default'].createClass({
     displayName: 'PlayButton',
 
     getInitialState: function getInitialState() {
-        return { playing: _storesStore2['default'].getState().playing };
+        return { playing: _storesStore2['default'].getState('playing') };
     },
     componentDidMount: function componentDidMount() {
         _storesStore2['default'].addChangeListener(this.onPlayStateChange);
@@ -120,7 +138,7 @@ var PlayButton = _react2['default'].createClass({
     },
     onPlayStateChange: function onPlayStateChange(key) {
         if (key === 'playing') {
-            this.setState({ playing: _storesStore2['default'].getState().playing });
+            this.setState({ playing: _storesStore2['default'].getState('playing') });
         }
     }
 });
@@ -128,7 +146,7 @@ var Tempo = _react2['default'].createClass({
     displayName: 'Tempo',
 
     getInitialState: function getInitialState() {
-        return { tempo: _storesStore2['default'].getState().tempo };
+        return { tempo: _storesStore2['default'].getState('tempo') };
     },
     componentDidMount: function componentDidMount() {
         _storesStore2['default'].addChangeListener(this.onTempoChange);
@@ -158,7 +176,7 @@ var Tempo = _react2['default'].createClass({
     },
     onTempoChange: function onTempoChange(key) {
         if (key === 'tempo') {
-            this.setState({ tempo: _storesStore2['default'].getState().tempo });
+            this.setState({ tempo: _storesStore2['default'].getState('tempo') });
         }
     }
 });
@@ -166,7 +184,7 @@ var PatternComplexity = _react2['default'].createClass({
     displayName: 'PatternComplexity',
 
     getInitialState: function getInitialState() {
-        return { complexity: _storesStore2['default'].getState().patternComplexity };
+        return { complexity: _storesStore2['default'].getState('patternComplexity') };
     },
     componentDidMount: function componentDidMount() {
         _storesStore2['default'].addChangeListener(this.onComplexityChange);
@@ -176,7 +194,7 @@ var PatternComplexity = _react2['default'].createClass({
     },
     render: function render() {
         var inputs = [];
-        for (var i = 0; i < DIFFICULTY_LEVELS; i++) {
+        for (var i = 0; i < _constantsConstants2['default'].COMPLEXITY_LEVELS; i++) {
             inputs.push(_react2['default'].createElement('input', { type: 'radio', name: 'complexity',
                 key: i, id: 'complexity' + i, value: i, onChange: this.setComplexity,
                 checked: Number(this.state.complexity) === i }));
@@ -197,7 +215,7 @@ var PatternComplexity = _react2['default'].createClass({
     },
     onComplexityChange: function onComplexityChange(key) {
         if (key === 'patternComplexity') {
-            this.setState({ complexity: _storesStore2['default'].getState().patternComplexity });
+            this.setState({ complexity: _storesStore2['default'].getState('patternComplexity') });
         }
     }
 });
@@ -205,7 +223,7 @@ var PatternComplexity = _react2['default'].createClass({
 exports['default'] = Controls;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../stores/store":11,"react":"react"}],4:[function(require,module,exports){
+},{"../actions/actions":2,"../constants/constants":5,"../stores/store":13,"react":"react"}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -225,6 +243,10 @@ var _storesStore2 = _interopRequireDefault(_storesStore);
 var _actionsActions = require('../actions/actions');
 
 var _actionsActions2 = _interopRequireDefault(_actionsActions);
+
+var _constantsConstants = require('../constants/constants');
+
+var _constantsConstants2 = _interopRequireDefault(_constantsConstants);
 
 var SampleBar = _react2['default'].createClass({
     displayName: 'SampleBar',
@@ -287,38 +309,35 @@ var TimelineCursor = _react2['default'].createClass({
     getInitialState: function getInitialState() {
         return { cursorPos: 0 };
     },
+    componentDidMount: function componentDidMount() {
+        _storesStore2['default'].addChangeListener(this.onBarChange);
+    },
+    componentWillUnmount: function componentWillUnmount() {
+        _storesStore2['default'].removeChangeListener(this.onBarChange);
+    },
     render: function render() {
         return _react2['default'].createElement('div', { className: 'cursor', style: { left: this.state.cursorPos + '%' } });
     },
-    interval: null,
-    reset: function reset(tempo) {
-        var _this = this;
-
-        var i = 0;
-        clearInterval(this.interval);
-        this.interval = setInterval(function () {
-            i++;
-            _this.setState({ cursorPos: i * 100 / 16 });
-            if (i === 16) {
-                clearInterval(_this.interval);
-                _this.interval = null;
-                _this.setState({ cursorPos: 0 });
-            }
-        }, 1000 * 15 / tempo);
-        this.setState({ cursorPos: 0 });
+    getPosition: function getPosition(bar) {
+        return bar * 100 / _constantsConstants2['default'].BARS;
+    },
+    onBarChange: function onBarChange(key, bar) {
+        if (key === 'bar') {
+            this.setState({ cursorPos: this.getPosition(bar) });
+        }
     }
 });
 var SamplesTimeline = _react2['default'].createClass({
     displayName: 'SamplesTimeline',
 
     getInitialState: function getInitialState() {
-        return { pattern: _storesStore2['default'].getState().currentPattern };
+        return { pattern: _storesStore2['default'].getState('currentPattern') };
     },
     componentDidMount: function componentDidMount() {
-        _storesStore2['default'].addChangeListener(this.onStateChange);
+        _storesStore2['default'].addChangeListener(this.onPatternChange);
     },
     componentWillUnmount: function componentWillUnmount() {
-        _storesStore2['default'].removeChangeListener(this.onStateChange);
+        _storesStore2['default'].removeChangeListener(this.onPatternChange);
     },
     render: function render() {
         var samplesLines = this.state.pattern.bars.map(function (samplePattern, i) {
@@ -327,15 +346,13 @@ var SamplesTimeline = _react2['default'].createClass({
         return _react2['default'].createElement(
             'div',
             { className: 'box clearfix' },
-            _react2['default'].createElement(TimelineCursor, { ref: 'cursor' }),
+            _react2['default'].createElement(TimelineCursor, null),
             samplesLines
         );
     },
-    onStateChange: function onStateChange(key) {
-        if (key === 'currentPattern') {
-            var rythmBoxState = _storesStore2['default'].getState();
-            this.setState({ pattern: rythmBoxState.currentPattern });
-            this.refs.cursor.reset(rythmBoxState.tempo);
+    onPatternChange: function onPatternChange(key) {
+        if (key === 'pattern') {
+            this.setState({ pattern: _storesStore2['default'].getState('currentPattern') });
         }
     }
 });
@@ -343,7 +360,30 @@ var SamplesTimeline = _react2['default'].createClass({
 exports['default'] = SamplesTimeline;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../stores/store":11,"react":"react"}],5:[function(require,module,exports){
+},{"../actions/actions":2,"../constants/constants":5,"../stores/store":13,"react":"react"}],5:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _libRythmboxRythmboxConstants = require('../lib/rythmbox/rythmbox-constants');
+
+var _libRythmboxRythmboxConstants2 = _interopRequireDefault(_libRythmboxRythmboxConstants);
+
+exports['default'] = Object.assign({
+    actionTypes: {
+        TOGGLE_PLAY: 'togglePlay',
+        TOGGLE_BUFFER: 'toggleBuffer',
+        SET_TEMPO: 'setTempo',
+        SET_COMPLEXITY: 'setComplexity'
+    }
+}, _libRythmboxRythmboxConstants2['default']);
+module.exports = exports['default'];
+
+},{"../lib/rythmbox/rythmbox-constants":9}],6:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -355,7 +395,7 @@ var _flux = require('flux');
 exports['default'] = new _flux.Dispatcher();
 module.exports = exports['default'];
 
-},{"flux":"flux"}],6:[function(require,module,exports){
+},{"flux":"flux"}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -400,7 +440,7 @@ var BufferLoader = (function () {
 exports['default'] = BufferLoader;
 module.exports = exports['default'];
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -511,7 +551,21 @@ var Collection = (function () {
 exports['default'] = Collection;
 module.exports = exports['default'];
 
-},{"../utils":10}],8:[function(require,module,exports){
+},{"../utils":12}],9:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+    value: true
+});
+exports['default'] = {
+    BARS: 16,
+    SCHEDULE_INTERVAL: 40,
+    SCHEDULE_AHEAD_TIME: 0.1,
+    COMPLEXITY_LEVELS: 3
+};
+module.exports = exports['default'];
+
+},{}],10:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -528,7 +582,9 @@ var _utils = require('../utils');
 
 var _utils2 = _interopRequireDefault(_utils);
 
-var PATTERN_SIZE = 16;
+var _rythmboxConstants = require('./rythmbox-constants');
+
+var _rythmboxConstants2 = _interopRequireDefault(_rythmboxConstants);
 
 exports['default'] = {
     basicGeneratedPattern: null,
@@ -541,7 +597,7 @@ exports['default'] = {
                 newSamplePattern.forEach(function (newBar, j) {
                     if (!merge || newBar) {
                         if (!source.bars[i]) {
-                            source.bars[i] = new Array(PATTERN_SIZE).fill(0);
+                            source.bars[i] = new Array(_rythmboxConstants2['default'].BARS).fill(0);
                         }
                         source.bars[i][j + startPoint] = newBar;
                     }
@@ -551,41 +607,39 @@ exports['default'] = {
     },
     getPattern: function getPattern(params) {
         var pattern;
-        var patternBreak;
         params = Object.assign({
             loopCount: 1,
             complexity: 0
         }, params);
         if (params.complexity === 2) {
+            // generates random
             pattern = this.generate({
-                'new': params.loopCount % 8 === 1
+                'new': params.loopCount % 8 === 1,
+                samplesCount: params.samplesCount
             });
         } else {
-            pattern = this.collection.get(params.complexity, 'plain');
+            // composes from collection
+            pattern = this.generateEmpty(params);
+            this.replace(pattern, this.collection.get(params.complexity, 'plain'));
             if (params.loopCount % 4 === 0) {
-                patternBreak = this.collection.get(params.complexity, 'breaks');
-                this.replace(pattern, patternBreak);
+                this.replace(pattern, this.collection.get(params.complexity, 'breaks'));
             }
         }
+        // adds crash if necessary
         if (params.loopCount % 8 === 1) {
             this.replace(pattern, this.collection.get(params.complexity, 'crash'));
         }
         return pattern;
     },
     generate: function generate(params) {
-        var result = {
-            bars: []
-        };
-        for (var _i = 0; _i < 6; _i++) {
-            result.bars.push(new Array(PATTERN_SIZE).fill(0));
-        }
+        var result = this.generateEmpty(params);
         if (params['new'] || !this.basicGeneratedPattern) {
             this.generateBasic();
         }
         // kick + snare
         this.replace(result, this.basicGeneratedPattern);
         result.bars[1].forEach(function (bar, i) {
-            if (i + 1 < PATTERN_SIZE && bar && _utils2['default'].random.number(0, 1)) {
+            if (i + 1 < _rythmboxConstants2['default'].BARS && bar && _utils2['default'].random.number(0, 1)) {
                 result.bars[0][i + 1] = 1;
             }
         });
@@ -613,7 +667,7 @@ exports['default'] = {
         if (result.bars[1][12]) {
             secondSnare.push(9);
         }
-        for (var _i2 = 0; _i2 < 2; _i2++) {
+        for (var _i = 0; _i < 2; _i++) {
             secondSnare.push(_utils2['default'].random.number(0, 15));
         }
         secondSnare.forEach(function (bar) {
@@ -627,7 +681,7 @@ exports['default'] = {
         do {
             result.bars[3][i] = 1;
             i += _utils2['default'].random.number(2, 4);
-        } while (i < PATTERN_SIZE);
+        } while (i < _rythmboxConstants2['default'].BARS);
 
         // tamb
         result.bars[4][0] = 1;
@@ -637,13 +691,13 @@ exports['default'] = {
                 result.bars[4][i] = 1;
             }
             i += _utils2['default'].random.number(2, 4);
-        } while (i < PATTERN_SIZE);
+        } while (i < _rythmboxConstants2['default'].BARS);
 
         // closed hi-hat
-        for (i = 0; i < PATTERN_SIZE; i++) {
+        for (i = 0; i < _rythmboxConstants2['default'].BARS; i++) {
             if (i % 2) {
                 var shift = _utils2['default'].random.number([-1, 0, 0, 0, 1]);
-                if (i + shift < PATTERN_SIZE) {
+                if (i + shift < _rythmboxConstants2['default'].BARS) {
                     result.bars[5][i + shift] = 1;
                 }
             }
@@ -652,11 +706,11 @@ exports['default'] = {
         return result;
     },
     generateBasic: function generateBasic() {
-        var kick = new Array(PATTERN_SIZE).fill(0);
+        var kick = new Array(_rythmboxConstants2['default'].BARS).fill(0);
         kick[0] = 1;
         kick[_utils2['default'].random.number([2, 8, 9, 11, 14])] = 1;
 
-        var snare = new Array(PATTERN_SIZE).fill(0);
+        var snare = new Array(_rythmboxConstants2['default'].BARS).fill(0);
         snare[_utils2['default'].random.number([4, 6])] = 1;
         if (snare[4]) {
             snare[_utils2['default'].random.number([10, 12])] = 1;
@@ -664,11 +718,20 @@ exports['default'] = {
             snare[12] = 1;
         }
         this.basicGeneratedPattern = { bars: [kick, snare], merge: true };
+    },
+    generateEmpty: function generateEmpty(_ref) {
+        var samplesCount = _ref.samplesCount;
+
+        var result = { bars: [] };
+        for (var i = 0; i < samplesCount; i++) {
+            result.bars.push(new Array(_rythmboxConstants2['default'].BARS).fill(0));
+        }
+        return result;
     }
 };
 module.exports = exports['default'];
 
-},{"../utils":10,"./rythmbox-collection":7}],9:[function(require,module,exports){
+},{"../utils":12,"./rythmbox-collection":8,"./rythmbox-constants":9}],11:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -680,6 +743,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _rythmboxConstants = require('./rythmbox-constants');
+
+var _rythmboxConstants2 = _interopRequireDefault(_rythmboxConstants);
 
 var _rythmboxPatternGenerator = require('./rythmbox-pattern-generator');
 
@@ -705,15 +772,20 @@ var Rythmbox = (function () {
 
         this.urls = params.urls;
         this.audioCtx = null;
-        this.changeCallbacks = [];
+
+        this.scheduleInterval = null;
+        this.nextBarTime = 0;
+        this.barCount = 0;
+        this.loopCount = 1;
+        this.barsQueue = [];
+        this.currentPattern = {};
+
+        this.changeCallback = function () {};
         this[state] = _utils2['default'].dataset({
-            tempo: params.tempo,
-            playing: true,
-            loopCount: 1,
+            loading: true,
+            playing: false,
             patternComplexity: 0,
-            currentPattern: {
-                bars: []
-            }
+            tempo: params.tempo
         });
         try {
             window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -722,69 +794,102 @@ var Rythmbox = (function () {
             alert('Web Audio API is not supported in this browser');
         }
 
-        this.bufferLoader = new _rythmboxBufferLoader2['default'](this.audioCtx, this.urls);
-        this.bufferLoader.load().then(function (result) {
+        this.currentPattern = this.getPattern();
+        new _rythmboxBufferLoader2['default'](this.audioCtx, this.urls).load().then(function (result) {
             _this.bufferList = result;
-            _this.loop(true);
+            _this.setState({ loading: false });
+            requestAnimationFrame(_this.publish.bind(_this));
         })['catch'](function (err) {
-            alert(err);
+            console.error(err || 'Couldn\'t load sounds');
         });
     }
 
     _createClass(Rythmbox, [{
-        key: 'getPattern',
-        value: function getPattern() {
-            return _rythmboxPatternGenerator2['default'].getPattern({
-                loopCount: this[state].get('loopCount'),
-                complexity: this[state].get('patternComplexity')
-            });
-        }
-    }, {
-        key: 'loop',
-        value: function loop(immediately) {
-            var _this2 = this;
-
-            var pattern;
-            setTimeout(function () {
-                if (pattern) {
-                    _this2.setState({ currentPattern: pattern });
-                    var loopStartTime = _this2.audioCtx.currentTime;
-                    _this2.bufferList.forEach(function (buffer, i) {
-                        if (!_this2.muted[i] && pattern.bars[i]) {
-                            pattern.bars[i].forEach(function (play, bar) {
-                                if (play) {
-                                    _this2.playChunk(buffer, bar, loopStartTime);
-                                }
-                            });
-                        }
-                    });
-                    _this2.setState({ loopCount: _this2[state].get('loopCount') + 1 });
-                }
-
-                _this2.loop();
-            }, immediately ? 0 : 4 * 1000 * 60 / this[state].get('tempo'));
-
-            if (this[state].get('playing')) {
-                pattern = this.getPattern();
+        key: 'nextBar',
+        value: function nextBar() {
+            this.nextBarTime += 15 / this[state].get('tempo');
+            this.barCount++;
+            if (this.barCount === _rythmboxConstants2['default'].BARS) {
+                this.barCount = 0;
+                this.loopCount++;
+                this.currentPattern = this.getPattern();
+                this.currentPattern.isNew = true;
             }
         }
     }, {
-        key: 'playChunk',
-        value: function playChunk(buffer, bar, startTime) {
-            var source = this.audioCtx.createBufferSource();
-            source.buffer = buffer;
-            source.connect(this.audioCtx.destination);
-            source.start(startTime + bar * 15 / this[state].get('tempo'));
+        key: 'scheduleChunks',
+        value: function scheduleChunks() {
+            var _this2 = this;
+
+            this.barsQueue.push({ bar: this.barCount, time: this.nextBarTime });
+
+            this.bufferList.forEach(function (buffer, i) {
+                if (!_this2.muted[i] && _this2.currentPattern.bars[i] && _this2.currentPattern.bars[i][_this2.barCount]) {
+                    var source = _this2.audioCtx.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(_this2.audioCtx.destination);
+                    source.start(_this2.nextBarTime);
+                }
+            });
+        }
+    }, {
+        key: 'schedule',
+        value: function schedule() {
+            var currentTime = this.audioCtx.currentTime;
+            while (this.nextBarTime < currentTime + _rythmboxConstants2['default'].SCHEDULE_AHEAD_TIME) {
+                this.scheduleChunks();
+                this.nextBar();
+            }
         }
     }, {
         key: 'play',
         value: function play() {
+            this.nextBarTime = this.audioCtx.currentTime;
+            this.barCount = 0;
+
+            this.schedule();
+            this.scheduleInterval = setInterval(this.schedule.bind(this), _rythmboxConstants2['default'].SCHEDULE_INTERVAL);
+
             this.setState({ playing: true });
         }
     }, {
         key: 'stop',
         value: function stop() {
+            if (this.scheduleInterval) {
+                clearInterval(this.scheduleInterval);
+                this.scheduleInterval = null;
+            }
+
             this.setState({ playing: false });
+        }
+    }, {
+        key: 'publish',
+        value: function publish() {
+            var currentTime = this.audioCtx.currentTime;
+            var currentBar;
+            var newPattern;
+            while (this.barsQueue.length && this.barsQueue[0].time < currentTime) {
+                currentBar = this.barsQueue[0].bar;
+                if (currentBar === 0) {
+                    newPattern = true;
+                }
+                this.barsQueue.shift();
+            }
+
+            // set cursor to 0 when stopped
+            if (this[state].get('playing') === false && currentBar !== 0) {
+                currentBar = 0;
+            }
+
+            if (currentBar !== undefined) {
+                this.changeCallback('bar', currentBar);
+                if (this.currentPattern.isNew) {
+                    delete this.currentPattern.isNew;
+                    this.changeCallback('pattern');
+                }
+            }
+
+            requestAnimationFrame(this.publish.bind(this));
         }
     }, {
         key: 'getState',
@@ -798,15 +903,22 @@ var Rythmbox = (function () {
 
             var delta = this[state].set(data);
             Object.keys(delta).forEach(function (key) {
-                _this3.changeCallbacks.forEach(function (callback) {
-                    callback(key);
-                });
+                _this3.changeCallback(key);
             });
         }
     }, {
         key: 'onChange',
         value: function onChange(callback) {
-            this.changeCallbacks.push(callback);
+            this.changeCallback = callback;
+        }
+    }, {
+        key: 'getPattern',
+        value: function getPattern() {
+            return _rythmboxPatternGenerator2['default'].getPattern({
+                loopCount: this.loopCount,
+                complexity: this[state].get('patternComplexity'),
+                samplesCount: this.urls.length
+            });
         }
     }]);
 
@@ -816,7 +928,7 @@ var Rythmbox = (function () {
 exports['default'] = Rythmbox;
 module.exports = exports['default'];
 
-},{"../utils":10,"./rythmbox-buffer-loader":6,"./rythmbox-pattern-generator":8}],10:[function(require,module,exports){
+},{"../utils":12,"./rythmbox-buffer-loader":7,"./rythmbox-constants":9,"./rythmbox-pattern-generator":10}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -998,12 +1110,13 @@ var utils = {
 exports['default'] = utils;
 module.exports = exports['default'];
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
     value: true
 });
+var _slice = Array.prototype.slice;
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 
@@ -1017,14 +1130,20 @@ var _libRythmboxRythmbox = require('../lib/rythmbox/rythmbox');
 
 var _libRythmboxRythmbox2 = _interopRequireDefault(_libRythmboxRythmbox);
 
+var _constantsConstants = require('../constants/constants');
+
 var rythmbox = new _libRythmboxRythmbox2['default']({
     tempo: 160,
     urls: ['./sounds/kick.ogg', './sounds/snare_01.ogg', './sounds/snare_02.ogg', './sounds/hat_01.ogg', './sounds/hat_02.ogg', './sounds/hat_03.ogg', './sounds/crash.ogg']
 });
 
 var Store = Object.assign({}, _events.EventEmitter.prototype, {
-    getState: function getState() {
-        return rythmbox.getState();
+    getState: function getState(key) {
+        if (rythmbox[key] !== undefined) {
+            return rythmbox[key];
+        } else {
+            return rythmbox.getState()[key];
+        }
     },
     getBufferName: function getBufferName(id) {
         var url = rythmbox.urls[id];
@@ -1036,20 +1155,20 @@ var Store = Object.assign({}, _events.EventEmitter.prototype, {
     removeChangeListener: function removeChangeListener(callback) {
         this.removeListener('change', callback);
     },
-    emitChange: function emitChange(key) {
-        this.emit('change', key);
+    emitChange: function emitChange() {
+        this.emit.apply(this, ['change'].concat(_slice.call(arguments)));
     },
     dispatcherIndex: _dispatcherAppDispatcher2['default'].register(function (action) {
         switch (action.actionType) {
-            case 'setTempo':
+            case _constantsConstants.actionTypes.SET_TEMPO:
                 rythmbox.setState({ tempo: action.tempo });
                 break;
 
-            case 'setComplexity':
+            case _constantsConstants.actionTypes.SET_COMPLEXITY:
                 rythmbox.setState({ patternComplexity: action.complexity });
                 break;
 
-            case 'togglePlay':
+            case _constantsConstants.actionTypes.TOGGLE_PLAY:
                 if (action.on) {
                     rythmbox.play();
                 } else {
@@ -1057,7 +1176,7 @@ var Store = Object.assign({}, _events.EventEmitter.prototype, {
                 }
                 break;
 
-            case 'toggleBuffer':
+            case _constantsConstants.actionTypes.TOGGLE_BUFFER:
                 if (rythmbox.muted[action.id]) {
                     delete rythmbox.muted[action.id];
                 } else {
@@ -1075,4 +1194,4 @@ rythmbox.onChange(Store.emitChange.bind(Store));
 exports['default'] = Store;
 module.exports = exports['default'];
 
-},{"../dispatcher/app-dispatcher":5,"../lib/rythmbox/rythmbox":9,"events":"events"}]},{},[1]);
+},{"../constants/constants":5,"../dispatcher/app-dispatcher":6,"../lib/rythmbox/rythmbox":11,"events":"events"}]},{},[1]);
