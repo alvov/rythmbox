@@ -1,21 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 'use strict';
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _componentsApp = require('./components/app');
-
-var _componentsApp2 = _interopRequireDefault(_componentsApp);
-
-_react2['default'].render(_react2['default'].createElement(_componentsApp2['default'], null), document.getElementById('app'));
-
-},{"./components/app":3,"react":"react"}],2:[function(require,module,exports){
-'use strict';
-
 Object.defineProperty(exports, '__esModule', {
     value: true
 });
@@ -56,7 +41,22 @@ exports['default'] = {
 };
 module.exports = exports['default'];
 
-},{"../constants/constants":7,"../dispatcher/app-dispatcher":8}],3:[function(require,module,exports){
+},{"../constants/constants":7,"../dispatcher/app-dispatcher":8}],2:[function(require,module,exports){
+'use strict';
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _componentsApp = require('./components/app');
+
+var _componentsApp2 = _interopRequireDefault(_componentsApp);
+
+_react2['default'].render(_react2['default'].createElement(_componentsApp2['default'], null), document.getElementById('app'));
+
+},{"./components/app":3,"react":"react"}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -274,7 +274,7 @@ var PatternComplexity = _react2['default'].createClass({
 exports['default'] = Controls;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../constants/constants":7,"../stores/store":15,"react":"react"}],5:[function(require,module,exports){
+},{"../actions/actions":1,"../constants/constants":7,"../stores/store":15,"react":"react"}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -468,7 +468,7 @@ var SamplesTimeline = _react2['default'].createClass({
 exports['default'] = SamplesTimeline;
 module.exports = exports['default'];
 
-},{"../actions/actions":2,"../constants/constants":7,"../stores/store":15,"react":"react"}],7:[function(require,module,exports){
+},{"../actions/actions":1,"../constants/constants":7,"../stores/store":15,"react":"react"}],7:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -1307,4 +1307,4 @@ rythmbox.onChange(Store.emitChange.bind(Store));
 exports['default'] = Store;
 module.exports = exports['default'];
 
-},{"../constants/constants":7,"../dispatcher/app-dispatcher":8,"../lib/rythmbox/rythmbox":13,"events":"events"}]},{},[1]);
+},{"../constants/constants":7,"../dispatcher/app-dispatcher":8,"../lib/rythmbox/rythmbox":13,"events":"events"}]},{},[2]);

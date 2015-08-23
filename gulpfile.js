@@ -1,7 +1,10 @@
 var gulp = require('gulp');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
+var buffer = require('vinyl-buffer');
+var size = require('gulp-size');
 var babelify = require('babelify');
+var uglify = require('gulp-uglify');
 var stylus = require('gulp-stylus');
 var autoprefixer = require('gulp-autoprefixer');
 var nodeResolve = require('resolve');
@@ -16,6 +19,9 @@ gulp.task('vendor', function() {
     });
     return b.bundle()
         .pipe(source('vendor.js'))
+        .pipe(buffer())
+        .pipe(uglify())
+        .pipe(size())
         .pipe(gulp.dest('./js/'));
 });
 
@@ -29,6 +35,8 @@ gulp.task('js', function() {
     });
     return b.bundle()
         .pipe(source('bundle.js'))
+        .pipe(buffer())
+        .pipe(size())
         .pipe(gulp.dest('./js/'));
 });
 
